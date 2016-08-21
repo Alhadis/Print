@@ -6,6 +6,7 @@
 	"repository": "Alhadis/Print",
 	"author": "John Gardner <gardnerjohng@gmail.com>",
 	"keywords": ["stringify", "trace", "debug", "outline", "format", "string"],
+	"license": "ISC",
 	"main": "print.js",
 	"engines": {
 		"node": "*",
