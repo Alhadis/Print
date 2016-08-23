@@ -288,7 +288,7 @@ function print(input, options = {}, name = "", refs = null){
 		}
 	}
 	
-	output = output ? output.replace(/^/gm, "\t") + "\n" : "";
+	output = output ? output.replace(/\n/g, "\n\t") + "\n" : "";
 	return typePrefix + (arrayLike
 		? "[" + output + "]"
 		: "{" + output + "}");
