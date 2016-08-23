@@ -110,8 +110,8 @@ function print(input, options = {}, name = "", refs = null){
 			const valueString = `${index}.` + "value";
 			
 			let [key, value] = entry;
-			key   = stringify(key,   options, `${namePrefix}[${keyString}]`,   refs);
-			value = stringify(value, options, `${namePrefix}[${valueString}]`, refs);
+			key   = print(key,   options, `${namePrefix}[${keyString}]`,   refs);
+			value = print(value, options, `${namePrefix}[${valueString}]`, refs);
 			
 			/** Key */
 			let delim = /^->\s/.test(key) ? " " : " => ";
@@ -136,7 +136,7 @@ function print(input, options = {}, name = "", refs = null){
 		
 		for(let value of input.values()){
 			const valueName = (name ? name : "{input}") + ".entries[" + index + "]";
-			value = stringify(value, options, valueName, refs);
+			value = print(value, options, valueName, refs);
 			
 			const delim = /^->\s/.test(value) ? " " : " => ";
 			output += index + delim + value + "\n";
@@ -217,7 +217,7 @@ function print(input, options = {}, name = "", refs = null){
 		}
 		
 		let accessor = /\W|^\d+$/.test(key) ? `[${key}]` : (name ? "."+key : key);
-		let value    = stringify(input[key], options, name + accessor, refs);
+		let value    = print(input[key], options, name + accessor, refs);
 		output      += "\n";
 		
 		/** Arrays: Check if each value's index should be omitted */
@@ -254,7 +254,7 @@ function print(input, options = {}, name = "", refs = null){
 			valName  = (name ? "." : "") + accessor;
 		}
 		
-		const value = stringify(input[symbol], options, name + valName, refs);
+		const value = print(input[symbol], options, name + valName, refs);
 		output += `\n${accessor}: ${value}`;
 	}
 	
