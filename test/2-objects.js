@@ -80,21 +80,21 @@ describe("Classes", function(){
 		}
 	}
 
-
 	it("Prints class instances", () => {
-		const output =
-		`Example{
-			name: "Foo"
-		}`;
-		expect(new Example()).to.print(output);
+		Chai.unindent(3);
+		expect(new Example()).to.print(`
+			Example{
+				name: "Foo"
+			}
+		`);
 	});
 	
 	
 	it("Prints instances of subclasses", () => {
-		const output = 
-		`ExtendedExample{
-			name: "Bar"
-		}`;
-		expect(new ExtendedExample()).to.print(output)
+		expect(new ExtendedExample()).to.print(`
+			ExtendedExample{
+				name: "Bar"
+			}
+		`)
 	});
 });

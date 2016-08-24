@@ -15,8 +15,10 @@ let unindentPattern;
 
 /** Unindent a value if it's a string, and Chai.unindent has been called */
 function trimIfNeeded(input){
-	if(unindentPattern && "[object String]" === Object.prototype.toString.call(input))
+	if(unindentPattern && "[object String]" === Object.prototype.toString.call(input)){
+		unindent.noTrim || (input = input.replace(/^(?:[\x20\t]*\n)*|(?:\n[\x20\t]*)*$/gi, ""));
 		return input.replace(unindentPattern, "");
+	}
 	return input;
 }
 
@@ -29,7 +31,7 @@ function trimIfNeeded(input){
  * @param {Number} columns - Number of leading tabs to strip from each line
  * @param {String} char - What defines a "tab". Defaults to a hard tab.
  */
-Chai.unindent = function(columns, char = "\t"){
+function unindent(columns, char = "\t"){
 	
 	/** If Chai.unindent hasn't been run yet, overwrite the necessary methods */
 	if(!overwritten){
@@ -50,6 +52,7 @@ Chai.unindent = function(columns, char = "\t"){
 		: null;
 };
 
+Chai.unindent = unindent;
 
 
 /**
