@@ -48,6 +48,11 @@ describe("Basic values", function(){
 		it("Escapes tabs",      () => expect("\t").to.print('"\\t"'));
 		it("Escapes newlines",  () => expect("\n").to.print('"\\n"'));
 		it("Escapes formfeeds", () => expect("\f").to.print('"\\f"'));
+		it("Doesn't escape whitespace escapeChars is disabled", () => {
+			expect("\t").to.print('"\t"', {escapeChars: false});
+			expect("\n").to.print('"\n"', {escapeChars: false});
+			expect("\f").to.print('"\f"', {escapeChars: false});
+		});
 	});
 	
 	it("Prints symbols",   () => expect(Symbol("Foo")).to.print("Symbol(Foo)"));
