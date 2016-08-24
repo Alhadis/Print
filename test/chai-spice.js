@@ -9,7 +9,17 @@ const Chai   = require("chai");
 const {util} = Chai;
 
 
-let overwritten, unindentPattern;
+let overwritten;
+let unindentPattern;
+
+
+/** Unindent a value if it's a string, and Chai.unindent has been called */
+function trimIfNeeded(input){
+	if(unindentPattern && "[object String]" === Object.prototype.toString.call(input))
+		return input.replace(unindentPattern, "");
+	return input;
+}
+
 
 /**
  * Strip leading tabulation from string blocks when running "equal" method.
@@ -29,12 +39,7 @@ Chai.unindent = function(columns, char = "\t"){
 			Chai.Assertion.overwriteMethod(method, function(__super){
 				return function(input, ...rest){
 					let obj = util.flag(this, "object");
-					
-					if("[object String]" === Object.prototype.call(input)){
-						const trimmed = input.replace(unindentPattern, "");
-						__super.apply(this, [trimmed, ...rest]);
-					}
-					else __super.apply(this, arguments);
+					__super.apply(this, [ trimIfNeeded(input), ...rest ]);
 				}
 			});
 		}
@@ -55,7 +60,7 @@ Chai.Assertion.addMethod("print", function(expected, options){
 	const printed = print(subject, options);
 	
 	this.assert(
-		expected === printed,
+		trimIfNeeded(expected) === printed,
 		"expected #{this} to print #{exp}",
 		"expected #{this} not to print #{exp}",
 		printed
