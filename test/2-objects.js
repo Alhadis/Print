@@ -117,17 +117,33 @@ describe("Lists", function(){
 		]`);
 	});
 	
-	it("Shows custom properties in data buffers", () => {
-		binary.customValue = "Something important";
-		expect(binary).to.print(`Buffer[
-			195
-			132
-			0
-			203
-			135
-			33
-			10
-			customValue: "Something important"
-		]`)
-	})
+	
+	describe("Named properties", () => {
+		beforeEach(() => Chai.unindent(3));
+		
+		it("Shows named properties in arrays", () => {
+			const array = "ABCdef".match(/(\w)(\w)/);
+			expect(array).to.print(`[
+				"AB"
+				"A"
+				"B"
+				index: 0
+				input: "ABCdef"
+			]`);
+		});
+		
+		it("Shows custom properties in data buffers", () => {
+			binary.customValue = "Something important";
+			expect(binary).to.print(`Buffer[
+				195
+				132
+				0
+				203
+				135
+				33
+				10
+				customValue: "Something important"
+			]`)
+		})
+	});
 });
