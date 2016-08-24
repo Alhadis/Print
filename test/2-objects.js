@@ -42,6 +42,73 @@ describe("Basic objects", function(){
 			}
 		]`)
 	});
+	
+	
+	describe("Property names", () => {
+		Chai.untab = 3;
+		
+		const input = [
+			{
+				gamma: "G",
+				delta: "D",
+				alpha: "A",
+				beta:  "B",
+				quux:  "Q",
+				__FB:  "FooBar"
+			},
+			
+			{
+				ZZZZ: 0,
+				aaaa: 1,
+				AaAA: 2,
+				bbBB: 3
+			}
+		];
+		
+		it("Alphabetises each property's name by default", () => {
+			expect(input[0]).to.print(`{
+				__FB: "FooBar"
+				alpha: "A"
+				beta: "B"
+				delta: "D"
+				gamma: "G"
+				quux: "Q"
+			}`);
+		});
+		
+		it("Alphabetises case-insensitively", () => {
+			expect(input[1]).to.print(`{
+				aaaa: 1
+				AaAA: 2
+				bbBB: 3
+				ZZZZ: 0
+			}`);
+		});
+		
+		it("Preserves enumeration order if sortProps is disabled", () => {
+			expect(input[0]).to.print(`{
+				gamma: "G"
+				delta: "D"
+				alpha: "A"
+				beta: "B"
+				quux: "Q"
+				__FB: "FooBar"
+			}`, {sortProps: false});
+		});
+		
+		const symb = Symbol("Fancy-Symbol");
+		it("Uses a @@-prefix to indicate Symbol-keyed properties", () => {
+			expect({[symb]: true}).to.print(`{
+				@@Fancy-Symbol: true
+			}`);
+		});
+		
+		it("Omits the @@-prefix if nativeSymbols is enabled", () => {
+			expect({[symb]: true}).to.print(`{
+				Symbol(Fancy-Symbol): true
+			}`, {nativeSymbols: true})
+		});
+	});
 });
 
 
