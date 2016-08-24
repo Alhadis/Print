@@ -40,7 +40,6 @@ function unindent(columns, char = "\t"){
 		for(const method of ["equal", "string"]){
 			Chai.Assertion.overwriteMethod(method, function(__super){
 				return function(input, ...rest){
-					let obj = util.flag(this, "object");
 					__super.apply(this, [ trimIfNeeded(input), ...rest ]);
 				}
 			});
