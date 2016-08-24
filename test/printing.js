@@ -12,6 +12,8 @@ describe("Basic values", function(){
 	it("Prints numbers",   () => expect(42).to.print("42"));
 	it("Prints strings",   () => expect("Foo").to.print('"Foo"'));
 	it("Prints floats",    () => expect(4.2).to.print("4.2"));
+	it("Prints symbols",   () => expect(Symbol("Foo")).to.print("Symbol(Foo)"));
+	it("Prints promises",  () => expect(Promise.resolve()).to.print("Promise{}"));
 });
 
 describe("Primitives", function(){
@@ -20,10 +22,6 @@ describe("Primitives", function(){
 	it("Prints true",      () => expect(true).to.print("true"));
 	it("Prints false",     () => expect(false).to.print("false"));
 	it("Prints NaN",       () => expect(NaN).to.print("NaN"));
-});
-
-describe("Basic data objects", function(){
-	it("Prints symbols",   () => expect(Symbol("Foo")).to.print("Symbol(Foo)"));
 });
 
 
