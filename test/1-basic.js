@@ -7,42 +7,51 @@ const {expect} = Chai;
 
 
 describe("Basic values", function(){
-	it("Prints numbers",   () => expect(42).to.print("42"));
-	it("Prints strings",   () => expect("Foo").to.print('"Foo"'));
-	it("Prints floats",    () => expect(4.2).to.print("4.2"));
-	it("Prints symbols",   () => expect(Symbol("Foo")).to.print("Symbol(Foo)"));
-	it("Prints promises",  () => expect(Promise.resolve()).to.print("Promise{}"));
-});
-
-describe("Primitives", function(){
-	it("Prints null",      () => expect(null).to.print("null"));
-	it("Prints undefined", () => expect().to.print("undefined"));
-	it("Prints true",      () => expect(true).to.print("true"));
-	it("Prints false",     () => expect(false).to.print("false"));
-	it("Prints NaN",       () => expect(NaN).to.print("NaN"));
-});
-
-
-describe("Numerical constants", function(){
-	it("Prints Math.* constants", () => {
-		for(const constant of "E LN10 LN2 LOG10E LOG2E PI SQRT1_2 SQRT2".split(" "))
-			expect(Math[constant]).to.print("Math." + constant);
+	
+	describe("Primitives", function(){
+		it("Prints null",      () => expect(null).to.print("null"));
+		it("Prints undefined", () => expect().to.print("undefined"));
+		it("Prints true",      () => expect(true).to.print("true"));
+		it("Prints false",     () => expect(false).to.print("false"));
+		it("Prints NaN",       () => expect(NaN).to.print("NaN"));
 	});
 	
-	it("Prints Number.* constants", () => {
-		const names = `
-			EPSILON
-			MIN_VALUE
-			MAX_VALUE
-			MIN_SAFE_INTEGER
-			MAX_SAFE_INTEGER
-			NEGATIVE_INFINITY
-			POSITIVE_INFINITY
-		`;
+	describe("Numbers", () => {
+		it("Prints numbers", () => expect(42).to.print("42"));
+		it("Prints floats",  () => expect(4.2).to.print("4.2"));
+		it("Shortens long numbers", () => expect(1e64).to.print("1e+64"));
+		it("Prints negative values", () => expect(-42).to.print("-42"));
 		
-		for(const name of names.split(/\s+/g).filter(Boolean))
-			expect(Number[name]).to.print("Number." + name);
+		it("Prints Math.* constants", () => {
+			for(const constant of "E LN10 LN2 LOG10E LOG2E PI SQRT1_2 SQRT2".split(" "))
+				expect(Math[constant]).to.print("Math." + constant);
+		});
+		
+		it("Prints Number.* constants", () => {
+			const names = `
+				EPSILON
+				MIN_VALUE
+				MAX_VALUE
+				MIN_SAFE_INTEGER
+				MAX_SAFE_INTEGER
+				NEGATIVE_INFINITY
+				POSITIVE_INFINITY
+			`;
+			
+			for(const name of names.split(/\s+/g).filter(Boolean))
+				expect(Number[name]).to.print("Number." + name);
+		});
 	});
+	
+	describe("Strings", () => {
+		it("Prints strings",    () => expect("Foo").to.print('"Foo"'));
+		it("Escapes tabs",      () => expect("\t").to.print('"\\t"'));
+		it("Escapes newlines",  () => expect("\n").to.print('"\\n"'));
+		it("Escapes formfeeds", () => expect("\f").to.print('"\\f"'));
+	});
+	
+	it("Prints symbols",   () => expect(Symbol("Foo")).to.print("Symbol(Foo)"));
+	it("Prints promises",  () => expect(Promise.resolve()).to.print("Promise{}"));
 });
 
 

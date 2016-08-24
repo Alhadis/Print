@@ -1,7 +1,6 @@
 "use strict";
 
 const fs     = require("fs");
-const path   = require("path");
 const print  = require("../print.js");
 const Chai   = require("./chai-spice.js");
 const {expect} = Chai;
@@ -149,92 +148,5 @@ describe("Classes", function(){
 				name: "Bar"
 			}
 		`)
-	});
-});
-
-
-describe("Lists", function(){
-	const binary = fs.readFileSync(path.resolve(__dirname, "fixtures", "bytes.o"));
-	
-	it("Prints arrays", () => {
-		expect([
-			"Apple",
-			"Orange",
-			"Microsoft",
-			"Sun",
-			"Google",
-			"Gravity",
-			"Random"
-		]).to.print(`[
-			"Apple"
-			"Orange"
-			"Microsoft"
-			"Sun"
-			"Google"
-			"Gravity"
-			"Random"
-		]`);
-	});
-	
-	
-	it("Prints data buffers", () => {
-		expect(binary).to.print(`Buffer[
-			195
-			132
-			0
-			203
-			135
-			33
-			10
-		]`);
-	});
-	
-	
-	it("Prints typed arrays", () => {
-		expect(new Uint16Array(5)).to.print(`Uint16Array[
-			0
-			0
-			0
-			0
-			0
-		]`);
-		
-		expect(new Float64Array(5)).to.print(`Float64Array[
-			0
-			0
-			0
-			0
-			0
-		]`);
-	});
-	
-	
-	describe("Named properties", () => {
-		Chai.untab = 3;
-		
-		it("Shows named properties in arrays", () => {
-			const array = "ABCdef".match(/(\w)(\w)/);
-			expect(array).to.print(`[
-				"AB"
-				"A"
-				"B"
-				index: 0
-				input: "ABCdef"
-			]`);
-		});
-		
-		it("Shows custom properties in data buffers", () => {
-			binary.customValue = "Something important";
-			expect(binary).to.print(`Buffer[
-				195
-				132
-				0
-				203
-				135
-				33
-				10
-				customValue: "Something important"
-			]`)
-		})
 	});
 });

@@ -1,7 +1,6 @@
 "use strict";
 
 const fs     = require("fs");
-const path   = require("path");
 const print  = require("../print.js");
 const Chai   = require("./chai-spice.js");
 const {expect} = Chai;
