@@ -25,6 +25,11 @@ describe("Basic objects", function(){
 	});
 	
 	
+	it("Prints empty objects on one line", () => {
+		expect({}).to.print("{}");
+	});
+	
+	
 	it("Prints argument-objects", () => {
 		const args = (function(){
 			return arguments;

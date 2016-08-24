@@ -30,6 +30,10 @@ describe("Lists", function(){
 			]`);
 		});
 		
+		it("Prints empty arrays on one line", () => {
+			expect([]).to.print("[]");
+		});
+		
 		it("Shows named properties", () => {
 			const array = "ABCdef".match(/(\w)(\w)/);
 			expect(array).to.print(`[
