@@ -1,6 +1,7 @@
 "use strict";
 
 const fs     = require("fs");
+const path   = require("path");
 const print  = require("../print.js");
 const Chai   = require("./chai-spice.js");
 const {expect} = Chai;
@@ -21,27 +22,6 @@ describe("Basic objects", function(){
 			object: {}
 			word: "String"
 		}`);
-	});
-	
-	
-	it("Prints arrays", () => {
-		expect([
-			"Apple",
-			"Orange",
-			"Microsoft",
-			"Sun",
-			"Google",
-			"Gravity",
-			"Random"
-		]).to.print(`[
-			"Apple"
-			"Orange"
-			"Microsoft"
-			"Sun"
-			"Google"
-			"Gravity"
-			"Random"
-		]`);
 	});
 	
 	
@@ -97,4 +77,57 @@ describe("Classes", function(){
 			}
 		`)
 	});
+});
+
+
+describe("Lists", function(){
+	const binary = fs.readFileSync(path.resolve(__dirname, "fixtures", "bytes.o"));
+	
+	it("Prints arrays", () => {
+		Chai.unindent(2);
+		expect([
+			"Apple",
+			"Orange",
+			"Microsoft",
+			"Sun",
+			"Google",
+			"Gravity",
+			"Random"
+		]).to.print(`[
+			"Apple"
+			"Orange"
+			"Microsoft"
+			"Sun"
+			"Google"
+			"Gravity"
+			"Random"
+		]`);
+	});
+	
+	
+	it("Prints data buffers", () => {
+		expect(binary).to.print(`Buffer[
+			195
+			132
+			0
+			203
+			135
+			33
+			10
+		]`);
+	});
+	
+	it("Shows custom properties in data buffers", () => {
+		binary.customValue = "Something important";
+		expect(binary).to.print(`Buffer[
+			195
+			132
+			0
+			203
+			135
+			33
+			10
+			customValue: "Something important"
+		]`)
+	})
 });
