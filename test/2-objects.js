@@ -7,8 +7,9 @@ const Chai   = require("./chai-spice.js");
 const {expect} = Chai;
 
 
+Chai.untab = 2;
+
 describe("Basic objects", function(){
-	Chai.untab = 2;
 	
 	it("Prints simple objects", () => {
 		expect({
@@ -43,6 +44,78 @@ describe("Basic objects", function(){
 		]`)
 	});
 });
+
+
+
+describe("Errors", function(){
+	
+	it("Prints standard errors", () => {
+		expect(new Error("Nope")).to.print(`Error{
+			message: "Nope"
+			name: "Error"
+		}`);
+	});
+	
+	it("Prints AssertionErrors", () => {
+		let error;
+		try{ require("assert").equal(true, false, "Wrong"); }
+		catch(e){ error = e; }
+		
+		error.intentional = true;
+		expect(error).to.print(`AssertionError{
+			actual: true
+			expected: false
+			generatedMessage: false
+			intentional: true
+			message: "Wrong"
+			name: "AssertionError"
+			operator: "=="
+		}`);
+	});
+});
+
+
+describe("Functions", () => {
+	
+	it("Prints function objects", () => {
+		const func = function(i){ return i + 2 }
+		expect(func).to.print(`function(){
+			length: 1
+			name: "func"
+		}`);
+	});
+	
+	it("Prints nameless functions", () => {
+		expect(function(){return "A"}).to.print(`function(){
+			length: 0
+			name: ""
+		}`);
+	});
+	
+	it("Prints functions in objects", () => {
+		expect({
+			func: function fn(value){
+				return value;
+			}
+		}).to.print(`{
+			func: function(){
+				length: 1
+				name: "fn"
+			}
+		}`);
+	});
+	
+	it("Recognises generator functions", () => {
+		const obj = { money: function* generator(){ yield $20; } };
+		expect(obj).to.print(`{
+			money: function*(){
+				length: 0
+				name: "generator"
+			}
+		}`);
+	});
+});
+
 
 
 describe("Classes", function(){
@@ -81,7 +154,6 @@ describe("Classes", function(){
 
 
 describe("Lists", function(){
-	Chai.untab = 2;
 	const binary = fs.readFileSync(path.resolve(__dirname, "fixtures", "bytes.o"));
 	
 	it("Prints arrays", () => {
