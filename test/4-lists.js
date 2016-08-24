@@ -1,9 +1,8 @@
 "use strict";
 
-const fs     = require("fs");
-const path   = require("path");
-const print  = require("../print.js");
-const Chai   = require("./chai-spice.js");
+const print    = require("../print.js");
+const Chai     = require("./chai-spice.js");
+const {slurp}  = require("./helpers.js");
 const {expect} = Chai;
 
 
@@ -41,11 +40,129 @@ describe("Lists", function(){
 				input: "ABCdef"
 			]`);
 		});
+		
+		
+		describe("Options", () => {
+			Chai.untab = 4;
+			
+			it("Numbers each element if showArrayIndices is set", () => {
+				const output = `[
+					0: 1
+					1: 2
+					2: 3
+				]`;
+				expect([1, 2, 3]).to.print(output, {
+					showArrayIndices: true
+				});
+			});
+			
+			
+			it("Shows the array's size when showArrayLength is set", () => {
+				const output = `[
+					1
+					2
+					3
+					length: 3
+				]`;
+				expect([1, 2, 3]).to.print(output, {
+					showArrayLength: true
+				});
+			});
+			
+			
+			it("Show both numbers and size when both options are set", () => {
+				const output = `[
+					0: 1
+					1: 2
+					2: 3
+					length: 3
+				]`;
+				expect([1, 2, 3]).to.print(output, {
+					showArrayLength: true,
+					showArrayIndices: true
+				});
+			});
+			
+			
+			it("Truncates long arrays by default", () => {
+				Chai.unindent(0);
+				const output = slurp("fixtures/long-array.txt").trim();
+				expect(new Array(2445).fill(0)).to.print(output);
+			});
+			
+			
+			
+			const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+			
+			it("Truncates to different values set by maxArrayLength", () => {
+				const output = `[
+					1
+					2
+					3
+					
+					… 7 more values not shown
+				]`;
+				expect(input).to.print(output, {
+					maxArrayLength: 3
+				});
+			});
+			
+			
+			const allOpts = {
+				showArrayLength: true,
+				showArrayIndices: true,
+				maxArrayLength: 3
+			};
+			
+			it("Manages to combine all options together", () => {
+				const output = `[
+					0: 1
+					1: 2
+					2: 3
+					
+					… 7 more values not shown
+					
+					length: 10
+				]`;
+				expect(input).to.print(output, allOpts);
+			});
+			
+			
+			it("Can also do so with extra named properties attached", () => {
+				input.foo = "Bar";
+				input.baz = {
+					quuz: "Quux",
+					foobar: "FooBar",
+					needs: {
+						more: "foo"
+					}
+				};
+				
+				const output = `[
+					0: 1
+					1: 2
+					2: 3
+					
+					… 7 more values not shown
+					
+					baz: {
+						foobar: "FooBar"
+						needs: {
+							more: "foo"
+						}
+						quuz: "Quux"
+					}
+					foo: "Bar"
+					length: 10
+				]`;
+				expect(input).to.print(output, allOpts);
+			});
+		});
 	});
 
 
 	describe("Data buffers", () => {
-		const binary = fs.readFileSync(path.resolve(__dirname, "fixtures", "bytes.o"));
+		const binary = slurp("fixtures/bytes.o", true);
 		
 		it("Prints data buffers", () => {
 			expect(binary).to.print(`Buffer[
