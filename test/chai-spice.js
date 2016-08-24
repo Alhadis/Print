@@ -60,12 +60,15 @@ Chai.unindent = unindent;
 Chai.Assertion.addMethod("print", function(expected, options){
 	const subject = util.flag(this, "object");
 	const printed = print(subject, options);
+	expected = trimIfNeeded(expected);
 	
 	this.assert(
-		trimIfNeeded(expected) === printed,
+		expected === printed,
 		"expected #{this} to print #{exp}",
 		"expected #{this} not to print #{exp}",
-		printed
+		printed,
+		expected,
+		true
 	);
 });
 
