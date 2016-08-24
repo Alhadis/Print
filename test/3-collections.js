@@ -7,6 +7,8 @@ const Chai   = require("./chai-spice.js");
 const {expect} = Chai;
 
 
+Chai.untab = 2;
+
 const A = {
 	colour: 0x00FF00,
 	width: 28.52,
@@ -24,7 +26,6 @@ const B = {
 
 
 describe("Maps", () => {
-	beforeEach(() => Chai.unindent(2));
 	
 	it("Prints Maps with basic values", () => {
 		const map = new Map([
@@ -177,7 +178,6 @@ describe("Maps", () => {
 
 
 describe("Sets", () => {
-	beforeEach(() => Chai.unindent(2));
 	
 	it("Prints Sets with basic values", () => {
 		const set = new Set(["A", "B", 0xCC]);

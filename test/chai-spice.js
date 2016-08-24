@@ -11,6 +11,7 @@ const {util} = Chai;
 
 let overwritten;
 let unindentPattern;
+let columnCount;
 
 
 /** Unindent a value if it's a string, and Chai.unindent has been called */
@@ -46,6 +47,7 @@ function unindent(columns, char = "\t"){
 		}
 	}
 	
+	columnCount = columns;
 	unindentPattern = columns
 		? new RegExp("^(?:"+char+"){0,"+columns+"}", "gm")
 		: null;
@@ -54,9 +56,19 @@ function unindent(columns, char = "\t"){
 Chai.unindent = unindent;
 
 
-/**
- * Wrapper to make this module's specs less verbose.
- */
+/** Wrapper to make adjusting column-counts even easier */
+Object.defineProperty(Chai, "untab", {
+	get(){ return columnCount },
+	set(i){
+		if(i == columnCount) return;
+		beforeEach(() => Chai.unindent(i));
+		afterEach(() => Chai.unindent(false));
+	}
+});
+
+
+
+/** Wrapper to make this module's specs less verbose */
 Chai.Assertion.addMethod("print", function(expected, options){
 	const subject = util.flag(this, "object");
 	const printed = print(subject, options);

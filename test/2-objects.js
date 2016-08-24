@@ -8,7 +8,7 @@ const {expect} = Chai;
 
 
 describe("Basic objects", function(){
-	Chai.unindent(2);
+	Chai.untab = 2;
 	
 	it("Prints simple objects", () => {
 		expect({
@@ -46,6 +46,7 @@ describe("Basic objects", function(){
 
 
 describe("Classes", function(){
+	Chai.untab = 3;
 	
 	class Example{
 		constructor(){
@@ -61,7 +62,6 @@ describe("Classes", function(){
 	}
 
 	it("Prints class instances", () => {
-		Chai.unindent(3);
 		expect(new Example()).to.print(`
 			Example{
 				name: "Foo"
@@ -81,10 +81,10 @@ describe("Classes", function(){
 
 
 describe("Lists", function(){
+	Chai.untab = 2;
 	const binary = fs.readFileSync(path.resolve(__dirname, "fixtures", "bytes.o"));
 	
 	it("Prints arrays", () => {
-		Chai.unindent(2);
 		expect([
 			"Apple",
 			"Orange",
@@ -138,7 +138,7 @@ describe("Lists", function(){
 	
 	
 	describe("Named properties", () => {
-		beforeEach(() => Chai.unindent(3));
+		Chai.untab = 3;
 		
 		it("Shows named properties in arrays", () => {
 			const array = "ABCdef".match(/(\w)(\w)/);
