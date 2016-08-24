@@ -11,5 +11,9 @@
 	"engines": {
 		"node": "*",
 		"atom": "*"
+	},
+	"devDependencies": {
+		"mocha": "*",
+		"chai":  "*"
 	}
 }
