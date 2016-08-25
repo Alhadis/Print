@@ -4,11 +4,17 @@
 /**
  * Generate a human-readable representation of a value.
  *
- * @param  {Mixed}  input
- * @param  {Object} options
- * @return {String} output
+ * @param {Mixed}   input
+ * @param {Object}  options          - Optional parameters
+ * @param {Boolean} ampedSymbols     - Prefix Symbol-keyed properties with @@
+ * @param {Mixed}   escapeChars      - Which characters are escaped in string values
+ * @param {Number}  maxArrayLength   - Maximum number of array values to show before truncating
+ * @param {Boolean} showArrayIndices - Show the index of each element in an array
+ * @param {Boolean} showArrayLength  - Display an array's "length" property after its values
+ * @param {Boolean} sortProps        - Alphabetise the enumerable properties of printed objects
+ * @return {String}
  */
-function print(input, options = {}, name = "", refs = null){
+function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 	
 	/** Handle options/defaults */
 	let {
