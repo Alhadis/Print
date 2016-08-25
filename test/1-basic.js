@@ -53,6 +53,16 @@ describe("Basic values", function(){
 			expect("\n").to.print('"\n"', {escapeChars: false});
 			expect("\f").to.print('"\f"', {escapeChars: false});
 		});
+		
+		it("Allows custom character-ranges to be escaped", () => {
+			const chr = String.fromCodePoint(0x1F44C);
+			expect("T").to.print('"\\x54"',      {escapeChars: /[A-Z]/  });
+			expect(chr).to.print('"\\u{1F44C}"', {escapeChars: /[^A-Z]+/});
+		});
+		
+		it("Allows user-supplied functions to handle escaping", () => {
+			expect("abc").to.print('"ABC"', {escapeChars: s => s.toUpperCase()});
+		});
 	});
 	
 	it("Prints symbols",   () => expect(Symbol("Foo")).to.print("Symbol(Foo)"));
