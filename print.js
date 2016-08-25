@@ -114,29 +114,31 @@ function print(input, options = {}, name = "", refs = null){
 		padBeforeProps = true;
 		typeName = "Map";
 		
-		let index = 0;
-		for(let entry of input.entries()){
-			const namePrefix  = (name ? name : "Map") + ".entries";
-			const keyString   = `${index}.` + "key";
-			const valueString = `${index}.` + "value";
+		if(input.size){
+			let index = 0;
+			for(let entry of input.entries()){
+				const namePrefix  = (name ? name : "Map") + ".entries";
+				const keyString   = `${index}.` + "key";
+				const valueString = `${index}.` + "value";
+				
+				let [key, value] = entry;
+				key   = print(key,   options, `${namePrefix}[${keyString}]`,   refs);
+				value = print(value, options, `${namePrefix}[${valueString}]`, refs);
+				
+				/** Key */
+				let delim = /^->\s/.test(key) ? " " : " => ";
+				let str = keyString + delim + key;
+				
+				/** Value */
+				delim   = /^->\s/.test(value) ? " " : " => ";
+				str    += "\n" + valueString + delim + value;
+				
+				output += str + "\n\n";
+				++index;
+			}
 			
-			let [key, value] = entry;
-			key   = print(key,   options, `${namePrefix}[${keyString}]`,   refs);
-			value = print(value, options, `${namePrefix}[${valueString}]`, refs);
-			
-			/** Key */
-			let delim = /^->\s/.test(key) ? " " : " => ";
-			let str = keyString + delim + key;
-			
-			/** Value */
-			delim   = /^->\s/.test(value) ? " " : " => ";
-			str    += "\n" + valueString + delim + value;
-			
-			output += str + "\n\n";
-			++index;
+			output = "\n" + output.replace(/(?:\n\s*\n)+$/m, "");
 		}
-		
-		output = "\n" + output.replace(/(?:\n\s*\n)+$/m, "");
 	}
 	
 	
@@ -145,17 +147,19 @@ function print(input, options = {}, name = "", refs = null){
 		padBeforeProps = true;
 		typeName = "Set";
 		
-		let index  = 0;
-		for(let value of input.values()){
-			const valueName = (name ? name : "{input}") + ".entries[" + index + "]";
-			value = print(value, options, valueName, refs);
+		if(input.size){
+			let index  = 0;
+			for(let value of input.values()){
+				const valueName = (name ? name : "{input}") + ".entries[" + index + "]";
+				value = print(value, options, valueName, refs);
+				
+				const delim = /^->\s/.test(value) ? " " : " => ";
+				output += index + delim + value + "\n";
+				++index;
+			}
 			
-			const delim = /^->\s/.test(value) ? " " : " => ";
-			output += index + delim + value + "\n";
-			++index;
+			output = "\n" + output.replace(/(?:\n\t*\n?)+$/, "");
 		}
-		
-		output = "\n" + output.replace(/(?:\n\t*\n?)+$/, "");
 	}
 	
 	

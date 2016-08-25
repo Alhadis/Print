@@ -107,6 +107,11 @@ describe("Maps", () => {
 	});
 	
 	
+	it("Prints empty Maps on one line", () => {
+		expect(new Map()).to.print(`Map{}`);
+	});
+	
+	
 	it("Prints Maps with object keys", () => {
 		const map = new Map([
 			[A, "A"],
@@ -242,6 +247,9 @@ describe("Sets", () => {
 		}`)
 	});
 	
+	it("Prints empty Sets on one line", () => {
+		expect(new Set()).to.print(`Set{}`);
+	});
 	
 	it("Prints nested Sets", () => {
 		const nest = new Set([1, A, "3", new Set([2, B, "4"])]);
