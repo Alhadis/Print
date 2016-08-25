@@ -36,13 +36,13 @@ describe("Maps", () => {
 		expect(map).to.print(`Map{
 			0.key => "alpha"
 			0.value => "A"
-
+			
 			1.key => "beta"
 			1.value => "B"
-
+			
 			2.key => "gamma"
 			2.value => "G"
-
+			
 			3.key => "delta"
 			3.value => "D"
 		}`);
@@ -62,19 +62,19 @@ describe("Maps", () => {
 				a: "a"
 				A: "A"
 			}
-
+			
 			1.key => "beta"
 			1.value => {
 				b: "b"
 				B: "B"
 			}
-
+			
 			2.key => "gamma"
 			2.value => {
 				g: "g"
 				G: "G"
 			}
-
+			
 			3.key => "delta"
 			3.value => {
 				d: "d"
@@ -123,7 +123,7 @@ describe("Maps", () => {
 				width: 28.52
 			}
 			0.value => "A"
-
+			
 			1.key => {
 				age: 30
 				cereal: "Quuz"

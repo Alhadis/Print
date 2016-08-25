@@ -99,11 +99,22 @@ function print(input, options = {}, name = "", refs = null){
 	refs.set(input, name);
 	
 	
+	/** Begin compiling some serious output */
+	let output = "";
+	let typeName = "";
+	
+	let arrayLike;
+	let isFunc;
+	let ignoreNumbers;
+	let padBeforeProps;
+	
+	
 	/** Maps */
 	if("[object Map]" === type){
-		let output = "";
-		let index  = 0;
+		padBeforeProps = true;
+		typeName = "Map";
 		
+		let index = 0;
 		for(let entry of input.entries()){
 			const namePrefix  = (name ? name : "Map") + ".entries";
 			const keyString   = `${index}.` + "key";
@@ -121,19 +132,20 @@ function print(input, options = {}, name = "", refs = null){
 			delim   = /^->\s/.test(value) ? " " : " => ";
 			str    += "\n" + valueString + delim + value;
 			
-			output += str.replace(/^/gm, "\t") + "\n\n";
+			output += str + "\n\n";
 			++index;
 		}
 		
-		return "Map{\n" + output.replace(/(?:\n\s*\n)+$/m, "") + "\n}";
+		output = "\n" + output.replace(/(?:\n\s*\n)+$/m, "");
 	}
 	
 	
 	/** Sets */
-	if("[object Set]" === type){
-		let output = "";
-		let index  = 0;
+	else if("[object Set]" === type){
+		padBeforeProps = true;
+		typeName = "Set";
 		
+		let index  = 0;
 		for(let value of input.values()){
 			const valueName = (name ? name : "{input}") + ".entries[" + index + "]";
 			value = print(value, options, valueName, refs);
@@ -143,14 +155,16 @@ function print(input, options = {}, name = "", refs = null){
 			++index;
 		}
 		
-		return "Set{\n" + output.replace(/(?:\n\t*\n?)+$/, "").replace(/^/gm, "\t") + "\n}";
+		output = "\n" + output.replace(/(?:\n\t*\n?)+$/, "");
 	}
 	
 	
 	/** Objects, Arrays, and Functions */
-	const arrayLike     = "function" === typeof input[Symbol.iterator];
-	const isFunc        = "function" === typeof input;
-	const ignoreNumbers = !showArrayIndices && arrayLike;
+	else{
+		arrayLike     = "function" === typeof input[Symbol.iterator];
+		isFunc        = "function" === typeof input;
+		ignoreNumbers = !showArrayIndices && arrayLike;
+	}
 	
 	
 	/** Obtain a list of every (non-symbolic) property to show */
@@ -203,8 +217,10 @@ function print(input, options = {}, name = "", refs = null){
 	});
 	
 	
-	/** Begin compiling some serious output */
-	let output = "";
+	/** Insert a blank line if existing lines have been printed for this object */
+	if(padBeforeProps && keys.length)
+		output += "\n";
+	
 	
 	/** Regular properties */
 	for(let i = 0, l = keys.length; i < l; ++i){
@@ -260,36 +276,34 @@ function print(input, options = {}, name = "", refs = null){
 	
 	
 	/** Tweak output based on the value's type */
-	let typePrefix = "";
-	
 	if("[object Arguments]" === type)
-		typePrefix = "Arguments";
+		typeName = "Arguments";
 	
 	else{
 		const ctr = input.constructor.name;
 		switch(ctr){
 			
 			case "GeneratorFunction":
-				typePrefix = "function*()";
+				typeName = "function*()";
 				break;
 			
 			case "Function":
-				typePrefix = "function()";
+				typeName = "function()";
 				break;
 			
 			case "Array":
 			case "Object":
-				typePrefix = "";
+				typeName = "";
 				break;
 			
 			default:
-				typePrefix = ctr;
+				typeName = ctr;
 				break;
 		}
 	}
 	
 	output = output ? output.replace(/\n/g, "\n\t") + "\n" : "";
-	return typePrefix + (arrayLike
+	return typeName + (arrayLike
 		? "[" + output + "]"
 		: "{" + output + "}");
 }
