@@ -300,3 +300,64 @@ describe("Sets", () => {
 		}`);
 	});
 });
+
+
+
+describe("Weak collections", () => {
+
+	it("Prints empty WeakMaps on one line", () => {
+		expect(new WeakMap()).to.print(`WeakMap{}`);
+	});
+	
+	it("Prints empty WeakSets on one line", () => {
+		expect(new WeakSet()).to.print(`WeakSet{}`);
+	});
+	
+	it("Prints named properties in WeakMaps", () => {
+		const input = new WeakMap();
+		input.A = A;
+		input.B = B;
+		expect(input).to.print(`WeakMap{
+			A: {
+				colour: 65280
+				height: 10.2
+				range: [
+					-20
+					12
+				]
+				width: 28.52
+			}
+			B: {
+				age: 30
+				cereal: "Quuz"
+				name: "Foo"
+				nickname: "Baz"
+				type: "Bar"
+			}
+		}`);
+	});
+	
+	it("Prints named properties in WeakSets", () => {
+		const input = new WeakSet();
+		input.A = A;
+		input.B = B;
+		expect(input).to.print(`WeakSet{
+			A: {
+				colour: 65280
+				height: 10.2
+				range: [
+					-20
+					12
+				]
+				width: 28.52
+			}
+			B: {
+				age: 30
+				cereal: "Quuz"
+				name: "Foo"
+				nickname: "Baz"
+				type: "Bar"
+			}
+		}`);
+	});
+});

@@ -82,8 +82,6 @@ function print(input, options = {}, name = "", refs = null){
 		case "[object Symbol]":
 		case "[object Number]":  return input.toString();
 		case "[object RegExp]":  return `/${input.source}/${input.flags}`;
-		case "[object WeakMap]": return "WeakMap";
-		case "[object WeakSet]": return "WeakSet";
 		case "[object String]":{
 			if(escapeChars)
 				input = escapeChars(input);
