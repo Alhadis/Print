@@ -12,14 +12,15 @@ function print(input, options = {}, name = "", refs = null){
 	
 	/** Handle options/defaults */
 	let {
+		ampedSymbols,
 		escapeChars,
 		maxArrayLength,
-		nativeSymbols,
 		showArrayIndices,
 		showArrayLength,
 		sortProps
 	} = options;
 	
+	ampedSymbols   = undefined === ampedSymbols   ? true : ampedSymbols;
 	escapeChars    = undefined === escapeChars    ? /(?!\x20)\s|\\/g : escapeChars;
 	sortProps      = undefined === sortProps      ? true  : sortProps;
 	maxArrayLength = undefined === maxArrayLength ? 100   : (!+maxArrayLength ? false : maxArrayLength);
@@ -269,7 +270,7 @@ function print(input, options = {}, name = "", refs = null){
 		let valName  = "[" + accessor + "]";
 		
 		/** Use a @@-prefixed form to represent Symbols in property lists */
-		if(!nativeSymbols){
+		if(ampedSymbols){
 			accessor = "@@" + accessor.replace(/^Symbol\(|\)$/g, "");
 			valName  = (name ? "." : "") + accessor;
 		}

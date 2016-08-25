@@ -108,10 +108,10 @@ describe("Basic objects", function(){
 			}`);
 		});
 		
-		it("Omits the @@-prefix if nativeSymbols is enabled", () => {
+		it("Omits the @@-prefix if ampedSymbols is disabled", () => {
 			expect({[symb]: true}).to.print(`{
 				Symbol(Fancy-Symbol): true
-			}`, {nativeSymbols: true})
+			}`, {ampedSymbols: false})
 		});
 	});
 });
