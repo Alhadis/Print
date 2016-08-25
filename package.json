@@ -1,17 +1,14 @@
 {
 	"name": "Print",
 	"version": "0.0.0",
-	"private": true,
 	"description": "Generate a human-readable representation of a value.",
-	"repository": "Alhadis/Print",
 	"author": "John Gardner <gardnerjohng@gmail.com>",
 	"keywords": ["stringify", "trace", "debug", "outline", "format", "string"],
+	"repository": "https://github.com/Alhadis/Print",
 	"license": "ISC",
+	"engines": { "node": ">=6.0.0" },
 	"main": "print.js",
-	"engines": {
-		"node": "*",
-		"atom": "*"
-	},
+	"files": ["print.js"],
 	"devDependencies": {
 		"mocha": "*",
 		"chai":  "*"
