@@ -109,10 +109,11 @@ function print(input, options = {}, name = "", refs = null){
 	
 	/** Maps */
 	if("[object Map]" === type){
-		padBeforeProps = true;
 		typeName = "Map";
 		
 		if(input.size){
+			padBeforeProps = true;
+			
 			let index = 0;
 			for(let entry of input.entries()){
 				const namePrefix  = (name ? name : "Map") + ".entries";
@@ -142,10 +143,11 @@ function print(input, options = {}, name = "", refs = null){
 	
 	/** Sets */
 	else if("[object Set]" === type){
-		padBeforeProps = true;
 		typeName = "Set";
 		
 		if(input.size){
+			padBeforeProps = true;
+			
 			let index  = 0;
 			for(let value of input.values()){
 				const valueName = (name ? name : "{input}") + ".entries[" + index + "]";

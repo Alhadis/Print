@@ -208,6 +208,15 @@ describe("Maps", () => {
 			0.value => Symbol(Alpha)
 		}`);
 	});
+	
+
+	it("Only pads named properties in Maps with entries", () => {
+		const input = new Map();
+		input.name = "Quxabaz";
+		expect(input).to.print(`Map{
+			name: "Quxabaz"
+		}`);
+	});
 });
 
 
@@ -296,6 +305,15 @@ describe("Sets", () => {
 				baz: "Quux"
 				foo: "Bar"
 			}
+			name: "Quxabaz"
+		}`);
+	});
+	
+
+	it("Only pads named properties in Sets with entries", () => {
+		const input = new Set();
+		input.name = "Quxabaz";
+		expect(input).to.print(`Set{
 			name: "Quxabaz"
 		}`);
 	});
