@@ -161,6 +161,37 @@ describe("Maps", () => {
 	});
 	
 	
+	it("Shows named properties in Maps", () => {
+		const input = new Map([
+			["A", "a"],
+			["B", "b"],
+			["C", "c"]
+		]);
+		input.name = "Quxabaz";
+		input.customProperty = {
+			foo: "Bar",
+			baz: "Quux"
+		};
+		
+		expect(input).to.print(`Map{
+			0.key => "A"
+			0.value => "a"
+			
+			1.key => "B"
+			1.value => "b"
+			
+			2.key => "C"
+			2.value => "c"
+			
+			customProperty: {
+				baz: "Quux"
+				foo: "Bar"
+			}
+			name: "Quxabaz"
+		}`);
+	});
+	
+	
 	it("Shows symbols in Maps", () => {
 		const a = Symbol("Alpha");
 		expect(new Map([[a, "A"]])).to.print(`Map{
@@ -237,6 +268,27 @@ describe("Sets", () => {
 				}
 				2 => "4"
 			}
+		}`);
+	});
+	
+	
+	it("Shows named properties in Sets", () => {
+		const input = new Set(["A", "B", "C"]);
+		input.name = "Quxabaz";
+		input.customProperty = {
+			foo: "Bar",
+			baz: "Quux"
+		};
+		expect(input).to.print(`Set{
+			0 => "A"
+			1 => "B"
+			2 => "C"
+			
+			customProperty: {
+				baz: "Quux"
+				foo: "Bar"
+			}
+			name: "Quxabaz"
 		}`);
 	});
 });
