@@ -1,5 +1,5 @@
 {
-	"name": "Print",
+	"name": "print",
 	"version": "0.0.0",
 	"description": "Generate a human-readable representation of a value.",
 	"author": "John Gardner <gardnerjohng@gmail.com>",
