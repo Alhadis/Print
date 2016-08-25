@@ -320,3 +320,11 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 }
 
 module.exports = print;
+
+
+/** Wrapper for console.log(print(…)) */
+module.exports.out = function(...args){
+	const output = print(...args);
+	console.log(output);
+	return output;
+};

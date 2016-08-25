@@ -10,11 +10,14 @@ Usage
 
 ```js
 const print = require("print");
-print({
+let output = print({
     foo: "bar",
     baz: "quux",
     list: [1, 2, 3, 4, "five"]
 });
+console.log(output);
+
+print.out(obj); // Shortcut for console.log(print(obj));
 ```
 
 
