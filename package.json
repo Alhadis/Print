@@ -11,6 +11,7 @@
 	"files": ["print.js"],
 	"devDependencies": {
 		"mocha": "*",
-		"chai":  "*"
+		"chai":  "*",
+		"chai-untab": "*"
 	}
 }

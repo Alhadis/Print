@@ -89,7 +89,7 @@ describe("Lists", function(){
 			
 			
 			it("Truncates long arrays by default", () => {
-				Chai.unindent(0);
+				Chai.untab = false;
 				const output = slurp("fixtures/long-array.txt").trim();
 				expect(new Array(2445).fill(0)).to.print(output);
 			});
