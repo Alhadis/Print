@@ -291,7 +291,7 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 		typeName = "Arguments";
 	
 	else{
-		const ctr = input.constructor.name;
+		const ctr = input.constructor ? input.constructor.name : "";
 		switch(ctr){
 			
 			case "GeneratorFunction":

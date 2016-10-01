@@ -185,6 +185,13 @@ describe("Functions", () => {
 			}
 		}`);
 	});
+	
+	it("Avoids breaking on absent constructors", () => {
+		const obj = {get constructor(){ return undefined }};
+		expect(obj).to.print(`{
+			constructor: undefined
+		}`);
+	});
 });
 
 
