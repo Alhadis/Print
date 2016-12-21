@@ -76,7 +76,7 @@ describe("Regular expressions", function(){
 	it("Prints multiple flags", () => expect(/a/gmi).to.print("/a/gim"));
 	it("Prints hairy regex",    () => {
 		
-		/** Doing it this way, because screw leaning-toothpick syndrome */
+		// Doing it this way, because screw leaning-toothpick syndrome
 		let exp = require.resolve("./fixtures/hairy-regex.js");
 		let src = fs.readFileSync(exp).toString().replace(/^(?!\t).+\n?$|^\t+|,$/gm, "").split(/\n/g).filter(Boolean);
 		exp = require(exp);

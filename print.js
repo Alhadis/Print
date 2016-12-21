@@ -4,19 +4,19 @@
 /**
  * Generate a human-readable representation of a value.
  *
- * @param {Mixed}   input
- * @param {Object}  options          - Optional parameters
- * @param {Boolean} ampedSymbols     - Prefix Symbol-keyed properties with @@
- * @param {Mixed}   escapeChars      - Which characters are escaped in string values
- * @param {Number}  maxArrayLength   - Maximum number of array values to show before truncating
- * @param {Boolean} showArrayIndices - Show the index of each element in an array
- * @param {Boolean} showArrayLength  - Display an array's "length" property after its values
- * @param {Boolean} sortProps        - Alphabetise the enumerable properties of printed objects
+ * @param {Mixed}   input                 - Value to print
+ * @param {Object}  opts                  - Optional parameters
+ * @param {Boolean} opts.ampedSymbols     - Prefix Symbol-keyed properties with @@
+ * @param {Mixed}   opts.escapeChars      - Which characters to escape in string values
+ * @param {Number}  opts.maxArrayLength   - Maximum number of array values to show before truncating
+ * @param {Boolean} opts.showArrayIndices - Show the index of each element in an array
+ * @param {Boolean} opts.showArrayLength  - Display an array's "length" property after its values
+ * @param {Boolean} opts.sortProps        - Alphabetise the enumerable properties of printed objects
  * @return {String}
  */
-function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
+function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 	
-	/** Handle options/defaults */
+	// Handle options and defaults
 	let {
 		ampedSymbols,
 		escapeChars,
@@ -24,7 +24,7 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 		showArrayIndices,
 		showArrayLength,
 		sortProps
-	} = options;
+	} = opts;
 	
 	ampedSymbols   = undefined === ampedSymbols   ? true : ampedSymbols;
 	escapeChars    = undefined === escapeChars    ? /(?!\x20)\s|\\/g : escapeChars;
@@ -52,19 +52,19 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 		}(escapeChars));
 	
 	
-	/** Only thing that can't be checked with obvious methods */
+	// Only thing that can't be checked with obvious methods
 	if(Number.isNaN(input)) return "NaN";
 	
-	/** Exact match */
+	// Exact match
 	switch(input){
 		
-		/** Primitives */
+		// Primitives
 		case null:      return "null";
 		case undefined: return "undefined";
 		case true:      return "true";
 		case false:     return "false";
 		
-		/** "Special" values */
+		// "Special" values
 		case Math.E:                   return "Math.E";
 		case Math.LN10:                return "Math.LN10";
 		case Math.LN2:                 return "Math.LN2";
@@ -83,7 +83,7 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 		case Number.POSITIVE_INFINITY: return "Number.POSITIVE_INFINITY";
 	}
 	
-	/** Basic data types */
+	// Basic data types
 	const type = Object.prototype.toString.call(input);
 	switch(type){
 		case "[object Symbol]":
@@ -97,14 +97,14 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 		}
 	}
 	
-	/** Guard against circular references */
+	// Guard against circular references
 	refs = refs || new Map();
 	if(refs.has(input))
 		return "-> " + (refs.get(input) || "{input}");
 	refs.set(input, name);
 	
 	
-	/** Begin compiling some serious output */
+	// Begin compiling some serious output
 	let output = "";
 	let typeName = "";
 	
@@ -114,7 +114,7 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 	let padBeforeProps;
 	
 	
-	/** Maps */
+	// Maps
 	if("[object Map]" === type){
 		typeName = "Map";
 		
@@ -128,14 +128,14 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 				const valueString = `${index}.` + "value";
 				
 				let [key, value] = entry;
-				key   = print(key,   options, `${namePrefix}[${keyString}]`,   refs);
-				value = print(value, options, `${namePrefix}[${valueString}]`, refs);
+				key   = print(key,   opts, `${namePrefix}[${keyString}]`,   refs);
+				value = print(value, opts, `${namePrefix}[${valueString}]`, refs);
 				
-				/** Key */
+				// Key
 				let delim = /^->\s/.test(key) ? " " : " => ";
 				let str = keyString + delim + key;
 				
-				/** Value */
+				// Value
 				delim   = /^->\s/.test(value) ? " " : " => ";
 				str    += "\n" + valueString + delim + value;
 				
@@ -148,7 +148,7 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 	}
 	
 	
-	/** Sets */
+	// Sets
 	else if("[object Set]" === type){
 		typeName = "Set";
 		
@@ -158,7 +158,7 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 			let index  = 0;
 			for(let value of input.values()){
 				const valueName = (name ? name : "{input}") + ".entries[" + index + "]";
-				value = print(value, options, valueName, refs);
+				value = print(value, opts, valueName, refs);
 				
 				const delim = /^->\s/.test(value) ? " " : " => ";
 				output += index + delim + value + "\n";
@@ -170,7 +170,7 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 	}
 	
 	
-	/** Objects, Arrays, and Functions */
+	// Objects, Arrays, and Functions
 	else{
 		arrayLike     = "function" === typeof input[Symbol.iterator];
 		isFunc        = "function" === typeof input;
@@ -178,27 +178,27 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 	}
 	
 	
-	/** Obtain a list of every (non-symbolic) property to show */
+	// Obtain a list of every (non-symbolic) property to show
 	let keys = Object.keys(input);
 	
-	/** Functions: Include name and arity */
+	// Functions: Include name and arity
 	if(isFunc){
 		if(-1 === keys.indexOf("name"))    keys.push("name");
 		if(-1 === keys.indexOf("length"))  keys.push("length");
 	}
 	
-	/** Errors: Include name and message */
+	// Errors: Include name and message
 	else if(input instanceof Error){
 		if(-1 === keys.indexOf("name"))    keys.push("name");
 		if(-1 === keys.indexOf("message")) keys.push("message");
 	}
 	
-	/** Arrays: Add length if requested */
+	// Arrays: Add length if requested
 	else if(arrayLike && showArrayLength && -1 === keys.indexOf("length"))
 		keys.push("length");
 	
 
-	/** Clip lengthy arrays to a sensible limit */
+	// Clip lengthy arrays to a sensible limit
 	let truncationNote = null;
 	if(maxArrayLength !== false && arrayLike && input.length > maxArrayLength){
 		keys = keys.filter(k => +k != k || +k < maxArrayLength);
@@ -206,17 +206,17 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 	}
 	
 	
-	/** Alphabetise each property name */
+	// Alphabetise each property name
 	if(sortProps) keys = keys.sort((a, b) => {
 		let A, B;
 		
-		/** Numbers: Compare algebraically */
+		// Numbers: Compare algebraically
 		if(("0" == a || +a == a) && ("0" == b || +b == b)){
 			A = +a;
 			B = +b;
 		}
 		
-		/** Anything else: Convert to lowercase */
+		// Anything else: Convert to lowercase
 		else{
 			A = a.toLowerCase();
 			B = b.toLowerCase();
@@ -228,39 +228,39 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 	});
 	
 	
-	/** Insert a blank line if existing lines have been printed for this object */
+	// Insert a blank line if existing lines have been printed for this object */
 	if(padBeforeProps && keys.length)
 		output += "\n";
 	
 	
-	/** Regular properties */
+	// Regular properties
 	for(let i = 0, l = keys.length; i < l; ++i){
 		let key      = keys[i];
 		
-		/** Array's been truncated, and this is the first non-numeric key */
+		// Array's been truncated, and this is the first non-numeric key
 		if(null !== truncationNote && +key != key){
 			output  += truncationNote;
 			truncationNote = null;
 		}
 		
 		let accessor = /\W|^\d+$/.test(key) ? `[${key}]` : (name ? "."+key : key);
-		let value    = print(input[key], options, name + accessor, refs);
+		let value    = print(input[key], opts, name + accessor, refs);
 		output      += "\n";
 		
-		/** Arrays: Check if each value's index should be omitted */
+		// Arrays: Check if each value's index should be omitted
 		if(ignoreNumbers && /^\d+$/.test(key))
 			output += value;
 		
-		/** Name: Value */
+		// Name: Value
 		else output += `${key}: ${value}`;
 	}
 	
-	/** If we still have a truncation notice, it means there were only numerics to list */
+	// If we still have a truncation notice, it means there were only numerics to list
 	if(null !== truncationNote)
 		output += truncationNote.replace(/\n+$/, "");
 	
 	
-	/** Properties keyed by Symbols */
+	// Properties keyed by Symbols
 	let symbols = Object.getOwnPropertySymbols(input);
 	if(sortProps) symbols = symbols.sort((a, b) => {
 		const A = a.toString().toLowerCase();
@@ -275,18 +275,18 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 		let accessor = symbol.toString();
 		let valName  = "[" + accessor + "]";
 		
-		/** Use a @@-prefixed form to represent Symbols in property lists */
+		// Use a @@-prefixed form to represent Symbols in property lists
 		if(ampedSymbols){
 			accessor = "@@" + accessor.replace(/^Symbol\(|\)$/g, "");
 			valName  = (name ? "." : "") + accessor;
 		}
 		
-		const value = print(input[symbol], options, name + valName, refs);
+		const value = print(input[symbol], opts, name + valName, refs);
 		output += `\n${accessor}: ${value}`;
 	}
 	
 	
-	/** Tweak output based on the value's type */
+	// Tweak output based on the value's type
 	if("[object Arguments]" === type)
 		typeName = "Arguments";
 	
@@ -322,7 +322,7 @@ function print(input, options = {}, /*…Internal:*/ name = "", refs = null){
 module.exports = print;
 
 
-/** Wrapper for console.log(print(…)) */
+// Wrapper for console.log(print(…))
 module.exports.out = function(...args){
 	const output = print(...args);
 	console.log(output);

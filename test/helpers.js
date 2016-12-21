@@ -7,10 +7,10 @@ const path = require("path");
 module.exports = {
 	
 	/**
-	 * Reads the entire content of a file into memory.
+	 * Read the entire content of a file into memory.
 	 *
 	 * @param {String} filePath
-	 * @param {Boolean} asBuffer - Keep the data as a Buffer object.
+	 * @param {Boolean} [asBuffer=false] - Keep the data as a Buffer object.
 	 * @return {String|Buffer}
 	 */
 	slurp(filePath, asBuffer = false){

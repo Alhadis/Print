@@ -10,7 +10,7 @@ const {util} = Chai;
 require("chai-untab");
 
 
-/** Wrapper to make this module's specs less verbose */
+// Wrapper to make this module's specs less verbose
 Chai.Assertion.addMethod("print", function(expected, options){
 	const subject = util.flag(this, "object");
 	const printed = print(subject, options);
