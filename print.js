@@ -170,6 +170,50 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 	}
 	
 	
+	// Dates
+	else if(input instanceof Date){
+		typeName = "Date";
+		padBeforeProps = true;
+		output = "\n" + input.toISOString()
+			.replace(/T/, " ")
+			.replace(/\.?0*Z$/m, " GMT")
+			+ "\n";
+		
+		let delta  = Date.now() - input.getTime();
+		let future = delta < 0;
+		let floored;
+		
+		const units = [
+			[1000,  "second"],
+			[60000, "minute"],
+			[3600000, "hour"],
+			[86400000, "day"],
+			[2628e6, "month"],
+			[31536e6, "year"]
+		];
+		
+		delta = Math.abs(delta);
+		for(let i = 0, l = units.length; i < l; ++i){
+			const nextUnit = units[i + 1];
+			if(!nextUnit || delta < nextUnit[0]){
+				let [value, name] = units[i];
+				
+				// Only bother with floating-point values if it's within the last week
+				delta = (i > 0 && delta < 6048e5)
+					? (delta / value).toFixed(1).replace(/\.?0+$/, "")
+					: Math.round(delta / value);
+				
+				output += `${delta} ${name}`;
+				if(delta != 1)
+					output += "s";
+				break;
+			}
+		}
+		
+		output += future ? " from now" : " ago";
+	}
+	
+	
 	// Objects, Arrays, and Functions
 	else{
 		arrayLike     = "function" === typeof input[Symbol.iterator];
