@@ -4,8 +4,9 @@ Change Log
 This project honours [Semantic Versioning](http://semver.org/).
 
 
-[Unpublished]
+[v1.0.2]
 ------------------------------------------------------------------------
+**December 22nd, 2016**  
 * **Fixed:** Missing support for `Date` objects
 
 
@@ -22,6 +23,7 @@ Initial release.
 
 
 [Referenced links]:_____________________________________________________
-[Unpublished]: ../../compare/v1.0.1...HEAD
+[Unpublished]: ../../compare/v1.0.2...HEAD
+[v1.0.2]: https://github.com/Alhadis/Print/releases/tag/v1.0.2
 [v1.0.1]: https://github.com/Alhadis/Print/releases/tag/v1.0.1
 [v1.0.0]: https://github.com/Alhadis/Print/releases/tag/v1.0.0

@@ -1,6 +1,6 @@
 {
 	"name": "print",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Generate a human-readable representation of a value.",
 	"author": "John Gardner <gardnerjohng@gmail.com>",
 	"keywords": ["stringify", "trace", "debug", "outline", "format", "string"],
