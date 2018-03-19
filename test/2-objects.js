@@ -135,11 +135,12 @@ describe("Errors", function(){
 		error.intentional = true;
 		expect(error).to.print(`AssertionError{
 			actual: true
+			code: "ERR_ASSERTION"
 			expected: false
 			generatedMessage: false
 			intentional: true
 			message: "Wrong"
-			name: "AssertionError"
+			name: "AssertionError [ERR_ASSERTION]"
 			operator: "=="
 		}`);
 	});
