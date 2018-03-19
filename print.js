@@ -143,7 +143,7 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 				++index;
 			}
 			
-			output = "\n" + output.replace(/(?:\n\s*\n)+$/m, "");
+			output = "\n" + output.replace(/\s+$/, "");
 		}
 	}
 	
@@ -165,7 +165,7 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 				++index;
 			}
 			
-			output = "\n" + output.replace(/(?:\n\t*\n?)+$/, "");
+			output = "\n" + output.replace(/\s+$/, "");
 		}
 	}
 	
