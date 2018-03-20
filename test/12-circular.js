@@ -1,10 +1,9 @@
 "use strict";
 
 const {expect} = require("chai");
-const print    = require("../print.js");
 
 describe("Circular references", () => {
-	it("Doesn't list an object more than once", () => {
+	it("doesn't list an object more than once", () => {
 		const A = { name: "A" };
 		const B = { name: "B" };
 		B.A = A;
@@ -19,8 +18,7 @@ describe("Circular references", () => {
 		}`);
 	});
 	
-	
-	it("Refers to original input object as {input}", () => {
+	it("refers to original input object as {input}", () => {
 		const A = {};
 		A.A = A;
 		expect(A).to.print(`{
@@ -28,8 +26,7 @@ describe("Circular references", () => {
 		}`);
 	});
 	
-	
-	it('Merges "=> ->" into one arrow for Map references', () => {
+	it('merges "=> ->" into one arrow for Map references', () => {
 		const list = [1];
 		const mappedKey = new Map([[list, "list"]]);
 		const mappedValue = new Map([["list", list]]);
@@ -53,8 +50,7 @@ describe("Circular references", () => {
 		]`);
 	});
 	
-	
-	it("Displays very complex circular references", () => {
+	it("displays very complex circular references", () => {
 		const zeta = Symbol("Zeta");
 		const Z = {
 			lowerCase: "z",
@@ -93,6 +89,6 @@ describe("Circular references", () => {
 			overThere: Math.PI
 			self: -> {input}
 			@@Zeta: -> omega.@@Zeta
-		}`)
+		}`);
 	});
 });
