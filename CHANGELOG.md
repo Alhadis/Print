@@ -6,7 +6,7 @@ This project honours [Semantic Versioning](http://semver.org/).
 
 [Unpublished]
 ------------------------------------------------------------------------
-* **Added:** Recognition of object-type primitives
+* **Added:** Recognition of object-type primitives and async functions
 * **Added:** Support for subclassed built-ins
 
 

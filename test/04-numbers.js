@@ -135,7 +135,7 @@ describe("Numbers", () => {
 			}`);
 		});
 		
-		it("shows named properties", async () => {
+		it("shows named properties", () => {
 			const value = new Double(150);
 			value.foo = "Foo";
 			expect(value).to.print(`Double{

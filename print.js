@@ -1,6 +1,5 @@
 "use strict";
 
-
 /**
  * Generate a human-readable representation of a value.
  *
@@ -48,7 +47,7 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 					if(cp < 0xFF) return "\\x" + hex;
 					return "\\u{" + hex + "}";
 				});
-			}
+			};
 		}(escapeChars));
 	
 	
@@ -180,7 +179,6 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 		
 		let delta  = Date.now() - input.getTime();
 		let future = delta < 0;
-		let floored;
 		
 		const units = [
 			[1000,  "second"],
@@ -372,6 +370,14 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 	else{
 		const ctr = input.constructor ? input.constructor.name : "";
 		switch(ctr){
+			
+			case "AsyncGeneratorFunction":
+				typeName = "async function*()";
+				break;
+			
+			case "AsyncFunction":
+				typeName = "async function()";
+				break;
 			
 			case "GeneratorFunction":
 				typeName = "function*()";
