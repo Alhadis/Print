@@ -1,12 +1,8 @@
 "use strict";
 
-const fs     = require("fs");
-const print  = require("../print.js");
-const Chai   = require("./chai-spice.js");
-const {expect} = Chai;
-
-
-Chai.untab = 2;
+const fs       = require("fs");
+const {expect} = require("chai");
+const print    = require("../print.js");
 
 const A = {
 	colour: 0x00FF00,

@@ -1,13 +1,9 @@
 "use strict";
 
-const print  = require("../print.js");
-const Chai   = require("./chai-spice.js");
-const {expect} = Chai;
-
+const {expect} = require("chai");
+const print    = require("../print.js");
 
 describe("Circular references", () => {
-	Chai.detab = 2;
-	
 	it("Doesn't list an object more than once", () => {
 		const A = { name: "A" };
 		const B = { name: "B" };

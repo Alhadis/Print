@@ -1,8 +1,7 @@
 "use strict";
 
-const print  = require("../print.js");
-const Chai   = require("./chai-spice.js");
-const {expect} = Chai;
+const {expect} = require("chai");
+const print    = require("../print.js");
 
 describe("Primitives", () => {
 	it("Prints null",      () => expect(null).to.print("null"));

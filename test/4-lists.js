@@ -1,14 +1,11 @@
 "use strict";
 
-const print    = require("../print.js");
-const Chai     = require("./chai-spice.js");
+const {expect} = require("chai");
 const {slurp}  = require("./helpers.js");
-const {expect} = Chai;
+const print    = require("../print.js");
 
 
 describe("Lists", function(){
-	Chai.untab = 3;
-	
 	describe("Arrays", () => {
 		it("Prints arrays", () => {
 			expect([
@@ -47,8 +44,6 @@ describe("Lists", function(){
 		
 		
 		describe("Options", () => {
-			Chai.untab = 4;
-			
 			it("Numbers each element if showArrayIndices is set", () => {
 				const output = `[
 					0: 1
@@ -86,9 +81,8 @@ describe("Lists", function(){
 			});
 			
 			it("Truncates long arrays by default", () => {
-				Chai.untab = false;
 				const output = slurp("fixtures/long-array.txt").trim();
-				expect(new Array(2445).fill(0)).to.print(output);
+				expect(print(new Array(2445).fill(0))).to.equal(output);
 			});
 			
 			

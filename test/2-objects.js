@@ -1,14 +1,11 @@
 "use strict";
 
-const fs     = require("fs");
-const print  = require("../print.js");
-const Chai   = require("./chai-spice.js");
-const {expect} = Chai;
+const fs       = require("fs");
+const {expect} = require("chai");
+const print    = require("../print.js");
 
 
 describe("Objects", () => {
-	Chai.untab = 3;
-	
 	describe("Plain objects", () => {
 		it("Prints simple objects", () => {
 			expect({
@@ -140,8 +137,6 @@ describe("Objects", () => {
 	});
 	
 	describe("Classes", function(){
-		Chai.untab = 4;
-		
 		class Example{
 			constructor(){
 				this.name = "Foo";
@@ -174,8 +169,6 @@ describe("Objects", () => {
 	});
 	
 	describe("Dates", () => {
-		Chai.untab = 0;
-		
 		it("Prints the date's value in ISO format", () => {
 			const date = new Date("2000-12-31T18:02:16.555Z");
 			expect(print(date)).to.match(/^Date{\n\t2000-12-31 18:02:16\.555 GMT\n\t\d+ years ago\n}$/)
@@ -494,7 +487,6 @@ describe("Objects", () => {
 		} = require("./helpers.js");
 		
 		it("Identifies Math.* constants", () => {
-			++Chai.untab;
 			for(const constant of MathConstants){
 				const value = new Number(Math[constant]);
 				expect(value).to.print(`Number{
@@ -507,11 +499,9 @@ describe("Objects", () => {
 					foo: "Foo"
 				}`);
 			}
-			--Chai.untab;
 		});
 		
 		it("Identifies Number.* constants", () => {
-			++Chai.untab;
 			for(const constant of NumberConstants){
 				const value = new Number(Number[constant]);
 				expect(value).to.print(`Number{
@@ -524,7 +514,6 @@ describe("Objects", () => {
 					foo: "Foo"
 				}`);
 			}
-			--Chai.untab;
 		});
 		
 		it("Shows named properties", () => {
@@ -619,7 +608,6 @@ describe("Objects", () => {
 		});
 		
 		it("Escapes whitespace characters in internal values", () => {
-			++Chai.untab; // IDEA: Nuke this dumb "Chai.untab" crap
 			const escapeTests = [
 				['"\\t"', new String("\t")],
 				['"\\n"', new String("\n")],
@@ -639,7 +627,6 @@ describe("Objects", () => {
 					foo: "Foo"
 				}`);
 			}
-			--Chai.untab;
 		});
 		
 		it("Displays internal values truthfully", () => {
