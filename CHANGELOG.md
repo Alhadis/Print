@@ -4,6 +4,12 @@ Change Log
 This project honours [Semantic Versioning](http://semver.org/).
 
 
+[Unpublished]
+------------------------------------------------------------------------
+* **Added:** Recognition of object-type primitives
+* **Added:** Support for subclassed built-ins
+
+
 [v1.0.2]
 ------------------------------------------------------------------------
 **December 22nd, 2016**  

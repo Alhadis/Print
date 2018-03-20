@@ -5,6 +5,27 @@ const path = require("path");
 
 
 module.exports = {
+
+	MathConstants: [
+		"E",
+		"LN10",
+		"LN2",
+		"LOG10E",
+		"LOG2E",
+		"PI",
+		"SQRT1_2",
+		"SQRT2",
+	],
+	
+	NumberConstants: [
+		"EPSILON",
+		"MIN_VALUE",
+		"MAX_VALUE",
+		"MIN_SAFE_INTEGER",
+		"MAX_SAFE_INTEGER",
+		"NEGATIVE_INFINITY",
+		"POSITIVE_INFINITY",
+	],
 	
 	/**
 	 * Read the entire content of a file into memory.

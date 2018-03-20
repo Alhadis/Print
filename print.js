@@ -86,15 +86,19 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 	// Basic data types
 	const type = Object.prototype.toString.call(input);
 	switch(type){
+		case "[object Number]":
+			if("number" !== typeof input) break;
+			return input.toString();
+		
 		case "[object Symbol]":
-		case "[object Number]":  return input.toString();
-		case "[object RegExp]":  return `/${input.source}/${input.flags}`;
-		case "[object String]":{
+			if("symbol" !== typeof input) break;
+			return input.toString();
+		
+		case "[object String]":
+			if("string" !== typeof input) break;
 			if(escapeChars)
 				input = escapeChars(input);
-			
 			return `"${input}"`;
-		}
 	}
 	
 	// Guard against circular references
@@ -112,6 +116,9 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 	let isFunc;
 	let ignoreNumbers;
 	let padBeforeProps;
+
+	// Obtain a list of every (non-symbolic) property to show
+	let keys = Object.keys(input);
 	
 	
 	// Maps
@@ -122,24 +129,16 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 			padBeforeProps = true;
 			
 			let index = 0;
-			for(let entry of input.entries()){
+			for(let [key, value] of input.entries()){
 				const namePrefix  = (name ? name : "Map") + ".entries";
-				const keyString   = `${index}.` + "key";
-				const valueString = `${index}.` + "value";
+				const keyString   = `${index}.key`;
+				const valueString = `${index}.value`;
 				
-				let [key, value] = entry;
 				key   = print(key,   opts, `${namePrefix}[${keyString}]`,   refs);
 				value = print(value, opts, `${namePrefix}[${valueString}]`, refs);
 				
-				// Key
-				let delim = /^->\s/.test(key) ? " " : " => ";
-				let str = keyString + delim + key;
-				
-				// Value
-				delim   = /^->\s/.test(value) ? " " : " => ";
-				str    += "\n" + valueString + delim + value;
-				
-				output += str + "\n\n";
+				output += keyString   + (/^->\s/.test(key)   ? " " : " => ") + key   + "\n";
+				output += valueString + (/^->\s/.test(value) ? " " : " => ") + value + "\n\n";
 				++index;
 			}
 			
@@ -189,7 +188,7 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 			[3600000, "hour"],
 			[86400000, "day"],
 			[2628e6, "month"],
-			[31536e6, "year"]
+			[31536e6, "year"],
 		];
 		
 		delta = Math.abs(delta);
@@ -214,16 +213,52 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 	}
 	
 	
-	// Objects, Arrays, and Functions
-	else{
-		arrayLike     = "function" === typeof input[Symbol.iterator];
-		isFunc        = "function" === typeof input;
-		ignoreNumbers = !showArrayIndices && arrayLike;
+	// Objects and functions
+	else switch(type){
+		
+		// Number objects
+		case "[object Number]":
+			output = "\n" + print(Number.prototype.valueOf.call(input), opts);
+			padBeforeProps = true;
+			break;
+		
+		// String objects
+		case "[object String]":
+			output = "\n" + print(String.prototype.toString.call(input), opts);
+			padBeforeProps = true;
+			break;
+		
+		// Boolean objects
+		case "[object Boolean]":
+			output = "\n" + Boolean.prototype.toString.call(input);
+			padBeforeProps = true;
+			break;
+		
+		// Regular expressions
+		case "[object RegExp]":{
+			const {lastIndex, source, flags} = input;
+			output = `/${source}/${flags}`;
+			
+			// Return early if RegExp isn't subclassed and has no unusual properties
+			if(RegExp === input.constructor && 0 === lastIndex && 0 === keys.length)
+				return output;
+			
+			else{
+				output = "\n" + output;
+				padBeforeProps = true;
+				if(0 !== lastIndex)
+					keys.push("lastIndex");
+			}
+			break;
+		}
+		
+		// Anything else
+		default:
+			arrayLike     = "function" === typeof input[Symbol.iterator];
+			isFunc        = "function" === typeof input;
+			ignoreNumbers = !showArrayIndices && arrayLike;
 	}
 	
-	
-	// Obtain a list of every (non-symbolic) property to show
-	let keys = Object.keys(input);
 	
 	// Functions: Include name and arity
 	if(isFunc){
@@ -272,14 +307,14 @@ function print(input, opts = {}, /*…Internal:*/ name = "", refs = null){
 	});
 	
 	
-	// Insert a blank line if existing lines have been printed for this object */
+	// Insert a blank line if existing lines have been printed for this object
 	if(padBeforeProps && keys.length)
 		output += "\n";
 	
 	
 	// Regular properties
 	for(let i = 0, l = keys.length; i < l; ++i){
-		let key      = keys[i];
+		let key = keys[i];
 		
 		// Array's been truncated, and this is the first non-numeric key
 		if(null !== truncationNote && +key != key){

@@ -18,7 +18,7 @@ describe("Lists", function(){
 				"Sun",
 				"Google",
 				"Gravity",
-				"Random"
+				"Random",
 			]).to.print(`[
 				"Apple"
 				"Orange"
@@ -60,7 +60,6 @@ describe("Lists", function(){
 				});
 			});
 			
-			
 			it("Shows the array's size when showArrayLength is set", () => {
 				const output = `[
 					1
@@ -72,7 +71,6 @@ describe("Lists", function(){
 					showArrayLength: true
 				});
 			});
-			
 			
 			it("Show both numbers and size when both options are set", () => {
 				const output = `[
@@ -87,13 +85,11 @@ describe("Lists", function(){
 				});
 			});
 			
-			
 			it("Truncates long arrays by default", () => {
 				Chai.untab = false;
 				const output = slurp("fixtures/long-array.txt").trim();
 				expect(new Array(2445).fill(0)).to.print(output);
 			});
-			
 			
 			
 			const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
@@ -163,6 +159,41 @@ describe("Lists", function(){
 			});
 		});
 	});
+	
+	
+	describe("Arguments", () => {
+		const args = (function(){ return arguments; }("A", "B", {a: "C"}));
+		
+		it("Prints argument lists", () => {
+			expect(args).to.print(`Arguments[
+				"A"
+				"B"
+				{
+					a: "C"
+				}
+				@@Symbol.iterator: function(){
+					length: 0
+					name: "values"
+				}
+			]`);
+		});
+		
+		it("Shows custom properties", () => {
+			args.customValue = "Something important";
+			expect(args).to.print(`Arguments[
+				"A"
+				"B"
+				{
+					a: "C"
+				}
+				customValue: "Something important"
+				@@Symbol.iterator: function(){
+					length: 0
+					name: "values"
+				}
+			]`);
+		});
+	});
 
 
 	describe("Data buffers", () => {
@@ -191,7 +222,7 @@ describe("Lists", function(){
 				33
 				10
 				customValue: "Something important"
-			]`)
+			]`);
 		});
 	});
 	
