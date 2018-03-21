@@ -103,9 +103,10 @@ recommended if your input contains line-breaks or tabulation.
 
 ### invokeGetters
 [Boolean]  
-Permit `print` to call a property getter in order to display its computed value.
-Invoking getters can cause unwanted side-effects, so this setting is disabled by
-default.
+Permit `print` to call a property getter to display its computed value.
+
+Invoking a getter can have unwanted side-effects, so this option is disabled
+by default.
 
 
 
@@ -147,6 +148,8 @@ print(input, { maxArrayLength: 3 })
 ### showAll
 [Boolean]  
 Include non-enumerable properties when printing an object.
+
+Note that inherited properties are *always* hidden.
 
 
 ### showArrayIndices
