@@ -4,8 +4,9 @@ Change Log
 This project honours [Semantic Versioning](http://semver.org/).
 
 
-[Unpublished]
+[v1.1.0]
 ------------------------------------------------------------------------
+**March 21st, 2018**  
 * **Added:** Recognition of object-type primitives and async functions
 * **Added:** Support for subclassed built-ins
 * **Added:** The `invokeGetters` and `showAll` options
@@ -31,7 +32,8 @@ Initial release.
 
 
 [Referenced links]:_____________________________________________________
-[Unpublished]: ../../compare/v1.0.2...HEAD
+[Unpublished]: ../../compare/v1.1.0...HEAD
+[v1.1.0]: https://github.com/Alhadis/Print/releases/tag/v1.1.0
 [v1.0.2]: https://github.com/Alhadis/Print/releases/tag/v1.0.2
 [v1.0.1]: https://github.com/Alhadis/Print/releases/tag/v1.0.1
 [v1.0.0]: https://github.com/Alhadis/Print/releases/tag/v1.0.0
