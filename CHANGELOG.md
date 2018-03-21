@@ -8,6 +8,7 @@ This project honours [Semantic Versioning](http://semver.org/).
 ------------------------------------------------------------------------
 * **Added:** Recognition of object-type primitives and async functions
 * **Added:** Support for subclassed built-ins
+* **Fixed:** Breakage when printing invalid `Date` objects
 
 
 [v1.0.2]

@@ -23,11 +23,35 @@ describe("Dates", () => {
 		}
 	});
 	
+	it("identifies subclasses", () => {
+		class ExtendedDate extends Date{}
+		const date = new ExtendedDate("2000-12-31T18:02:16.555Z");
+		expect(print(date)).to.match(/^ExtendedDate{\n\t2000-12-31 18:02:16\.555 GMT\n\t\d+ years ago\n}$/);
+	});
+	
+	it("identifies malformed dates", () => {
+		expect(new Date(NaN)).to.print(`Date{
+			Invalid Date
+		}`);
+		class BadDate extends Date{ constructor(){ super(NaN); }}
+		expect(new BadDate()).to.print(`BadDate{
+			Invalid Date
+		}`);
+	});
+	
 	it("shows named properties", () => {
-		const date = new Date("2000-10-10T10:02:02Z");
+		let date = new Date("2000-10-10T10:02:02Z");
 		date.foo = "bar";
 		date.list = ["Alpha", "Beta", "Delta"];
 		expect(print(date)).to.match(/^Date{\n\t2000-10-10 10:02:02 GMT\n\t\d+ years ago\n\t\n\tfoo: "bar"\n\tlist: \[\n\t\t"Alpha"\n\t\t"Beta"\n\t\t"Delta"\n\t\]\n}$/);
+		
+		date = new Date(NaN);
+		date.foo = "bar";
+		expect(date).to.print(`Date{
+			Invalid Date
+			
+			foo: "bar"
+		}`);
 	});
 	
 	describe("Time differences", () => {
