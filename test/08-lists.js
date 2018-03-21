@@ -64,10 +64,6 @@ describe("Arrays", () => {
 			{
 				a: "C"
 			}
-			@@Symbol.iterator: function(){
-				length: 0
-				name: "values"
-			}
 		]`);
 	});
 	
@@ -106,10 +102,6 @@ describe("Arrays", () => {
 				a: "C"
 			}
 			customValue: "Something important"
-			@@Symbol.iterator: function(){
-				length: 0
-				name: "values"
-			}
 		]`);
 	});
 	

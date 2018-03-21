@@ -69,7 +69,9 @@ Available options and their default values are listed below:
 print(input, {
     ampedSymbols:     true,
     escapeChars:      /(?!\x20)\s|\\/g,
+    invokeGetters:    false,
     maxArrayLength:   100,
+    showAll:          false,
     showArrayIndices: false,
     showArrayLength:  false,
     sortProps:        true
@@ -96,6 +98,14 @@ receives the entire string as an argument.
 
 Passing falsey values to `escapeChars` disables escaping altogether, which isn't
 recommended if your input contains line-breaks or tabulation.
+
+
+
+### invokeGetters
+[Boolean]  
+Permit `print` to call a property getter in order to display its computed value.
+Invoking getters can cause unwanted side-effects, so this setting is disabled by
+default.
 
 
 
@@ -134,6 +144,10 @@ print(input, { maxArrayLength: 3 })
 ~~~
 
 
+### showAll
+[Boolean]  
+Include non-enumerable properties when printing an object.
+
 
 ### showArrayIndices
 [Boolean]  
@@ -164,9 +178,9 @@ Display an array's `length` property after its values:
 
 ### sortProps
 [Boolean]  
-Alphabetise the enumerable properties of printed objects.
+Alphabetise the properties of printed objects.
 
-To display properties in the order they were enumerated, set this to `false`.
+To display properties in the order they were assigned, set this to `false`.
 
 Note that alphabetisation is case-insensitive.
 

@@ -37,13 +37,6 @@ describe("Functions", () => {
 			}
 		}`);
 	});
-	
-	it("avoids breaking on absent constructors", () => {
-		const obj = {get constructor(){ return undefined; }};
-		expect(obj).to.print(`{
-			constructor: undefined
-		}`);
-	});
 
 	it("identifies generator functions", () => {
 		const foo = function* bar(){ yield 20; };

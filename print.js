@@ -7,10 +7,12 @@
  * @param {Object}  opts                  - Optional parameters
  * @param {Boolean} opts.ampedSymbols     - Prefix Symbol-keyed properties with @@
  * @param {Mixed}   opts.escapeChars      - Which characters to escape in string values
+ * @param {Boolean} opts.invokeGetters    - Show the values of properties defined by getter functions
  * @param {Number}  opts.maxArrayLength   - Maximum number of array values to show before truncating
+ * @param {Boolean} opts.showAll          - Display non-enumerable properties
  * @param {Boolean} opts.showArrayIndices - Show the index of each element in an array
  * @param {Boolean} opts.showArrayLength  - Display an array's "length" property after its values
- * @param {Boolean} opts.sortProps        - Alphabetise the enumerable properties of printed objects
+ * @param {Boolean} opts.sortProps        - Alphabetise the properties of printed objects
  * @return {String}
  */
 function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
@@ -19,10 +21,12 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	let {
 		ampedSymbols,
 		escapeChars,
+		invokeGetters,
 		maxArrayLength,
+		showAll,
 		showArrayIndices,
 		showArrayLength,
-		sortProps
+		sortProps,
 	} = opts;
 	
 	ampedSymbols   = undefined === ampedSymbols   ? true : ampedSymbols;
@@ -116,8 +120,25 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	let ignoreNumbers;
 	let padBeforeProps;
 
-	// Obtain a list of every (non-symbolic) property to show
-	let keys = Object.keys(input);
+	// Resolve which properties get displayed in the output
+	const descriptors = [
+		...Object.getOwnPropertyNames(input),
+		...Object.getOwnPropertySymbols(input),
+	].map(key => [key, Object.getOwnPropertyDescriptor(input, key)]);
+	
+	let normalKeys = [];
+	let symbolKeys = [];
+	for(const [key, descriptor] of descriptors){
+		const {enumerable, get, set} = descriptor;
+		
+		// Skip non-enumerable properties
+		if(!showAll && !enumerable) continue;
+		
+		if(!get && !set || invokeGetters && get)
+			"symbol" === typeof key
+				? symbolKeys.push(key)
+				: normalKeys.push(key);
+	}
 	
 	
 	// Maps
@@ -243,14 +264,14 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 			output = `/${source}/${flags}`;
 			
 			// Return early if RegExp isn't subclassed and has no unusual properties
-			if(RegExp === input.constructor && 0 === lastIndex && 0 === keys.length)
+			if(RegExp === input.constructor && 0 === lastIndex && 0 === normalKeys.length)
 				return output;
 			
 			else{
 				output = "\n" + output;
 				padBeforeProps = true;
 				if(0 !== lastIndex)
-					keys.push("lastIndex");
+					normalKeys.push("lastIndex");
 			}
 			break;
 		}
@@ -265,31 +286,36 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	
 	// Functions: Include name and arity
 	if(isFunc){
-		if(-1 === keys.indexOf("name"))    keys.push("name");
-		if(-1 === keys.indexOf("length"))  keys.push("length");
+		if(-1 === normalKeys.indexOf("name"))    normalKeys.push("name");
+		if(-1 === normalKeys.indexOf("length"))  normalKeys.push("length");
 	}
 	
 	// Errors: Include name and message
 	else if(input instanceof Error){
-		if(-1 === keys.indexOf("name"))    keys.push("name");
-		if(-1 === keys.indexOf("message")) keys.push("message");
+		if(-1 === normalKeys.indexOf("name"))    normalKeys.push("name");
+		if(-1 === normalKeys.indexOf("message")) normalKeys.push("message");
 	}
 	
-	// Arrays: Add length if requested
-	else if(arrayLike && showArrayLength && -1 === keys.indexOf("length"))
-		keys.push("length");
+	// Arrays: Handle length property
+	else if(arrayLike){
+		const index = normalKeys.indexOf("length");
+		if(showArrayLength && -1 === index)
+			normalKeys.push("length");
+		else if(!showArrayLength && -1 !== index)
+			normalKeys.splice(index, 1);
+	}
 	
 
 	// Clip lengthy arrays to a sensible limit
 	let truncationNote = null;
 	if(maxArrayLength !== false && arrayLike && input.length > maxArrayLength){
-		keys = keys.filter(k => +k != k || +k < maxArrayLength);
+		normalKeys = normalKeys.filter(k => +k != k || +k < maxArrayLength);
 		truncationNote = `\n\n… ${input.length - maxArrayLength} more values not shown\n`;
 	}
 	
 	
 	// Alphabetise each property name
-	if(sortProps) keys = keys.sort((a, b) => {
+	if(sortProps) normalKeys = normalKeys.sort((a, b) => {
 		let A, B;
 		
 		// Numbers: Compare algebraically
@@ -311,13 +337,14 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	
 	
 	// Insert a blank line if existing lines have been printed for this object
-	if(padBeforeProps && keys.length)
+	if(padBeforeProps && normalKeys.length)
 		output += "\n";
 	
 	
 	// Regular properties
-	for(let i = 0, l = keys.length; i < l; ++i){
-		let key = keys[i];
+	normalKeys = Array.from(new Set(normalKeys));
+	for(let i = 0, l = normalKeys.length; i < l; ++i){
+		let key = normalKeys[i];
 		
 		// Array's been truncated, and this is the first non-numeric key
 		if(null !== truncationNote && +key != key){
@@ -343,8 +370,8 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	
 	
 	// Properties keyed by Symbols
-	let symbols = Object.getOwnPropertySymbols(input);
-	if(sortProps) symbols = symbols.sort((a, b) => {
+	symbolKeys = Array.from(new Set(symbolKeys));
+	if(sortProps) symbolKeys = symbolKeys.sort((a, b) => {
 		const A = a.toString().toLowerCase();
 		const B = b.toString().toLowerCase();
 		if(A < B) return -1;
@@ -352,8 +379,8 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 		return 0;
 	});
 	
-	for(let i = 0, l = symbols.length; i < l; ++i){
-		const symbol = symbols[i];
+	for(let i = 0, l = symbolKeys.length; i < l; ++i){
+		const symbol = symbolKeys[i];
 		let accessor = symbol.toString();
 		let valName  = "[" + accessor + "]";
 		

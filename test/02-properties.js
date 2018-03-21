@@ -70,7 +70,7 @@ describe("Properties", () => {
 	});
 	
 	describe("Visibility", () => {
-		it("hides non-enumerable properties by default", () => {
+		it("hides non-enumerables by default", () => {
 			const value = {
 				number: 1024 * 768,
 				word: "String",
@@ -85,7 +85,23 @@ describe("Properties", () => {
 			}`);
 		});
 		
-		it("doesn't hide an Error's name and message properties", () => {
+		it("shows non-enumerables if `showAll` is enabled", () => {
+			expect(Object.create(null, {
+				word: {
+					value: "String",
+					enumerable: false,
+				},
+				length: {
+					value: 1024 * 768,
+					enumerable: true,
+				},
+			})).to.print(`{
+				length: 786432
+				word: "String"
+			}`, {showAll: true});
+		});
+		
+		it("always shows an Error's name and message", () => {
 			expect(new Error("Nope")).to.print(`Error{
 				message: "Nope"
 				name: "Error"
@@ -96,5 +112,126 @@ describe("Properties", () => {
 				name: "Error"
 			}`);
 		});
+		
+		it("shows lengths only when `showArrayLength` is set", () => {
+			expect([]).to.print("[]", {showAll: true});
+			expect([]).to.print(`[
+				length: 0
+			]`, {
+				showAll: true,
+				showArrayLength: true,
+			});
+			expect(["A", "B", "C"]).to.print(`[
+				"A"
+				"B"
+				"C"
+			]`, {showAll: true});
+			expect(["A", "B", "C"]).to.print(`[
+				"A"
+				"B"
+				"C"
+				length: 3
+			]`, {
+				showAll: true,
+				showArrayLength: true,
+			});
+		});
+		
+		it("never shows inherited properties", () => {
+			const descriptors = {
+				foo: {value: "Foo", writable: true, enumerable: true},
+				bar: {value: "Bar", writable: true, enumerable: false},
+			};
+			class Thing{ method(){} }
+			Object.defineProperties(Thing.prototype, descriptors);
+			const value = new Thing();
+			expect(value).to.print("Thing{}");
+			expect(value).to.print("Thing{}", {showAll: true});
+			Object.defineProperties(value, descriptors);
+			expect(value).to.print(`Thing{
+				foo: "Foo"
+			}`);
+			expect(value).to.print(`Thing{
+				bar: "Bar"
+				foo: "Foo"
+			}`, {showAll: true});
+		});
 	});
+	
+	describe("Getters", () => {
+		it("avoids triggering property getters by default", () => {
+			let called = false;
+			expect({
+				foo: "Foo",
+				get bar(){
+					called = true;
+					return "Bar";
+				},
+				baz: "Baz",
+			}).to.print(`{
+				baz: "Baz"
+				foo: "Foo"
+			}`);
+			expect(called).to.be.false;
+			
+			class Thing{
+				get bar(){
+					called = true;
+					return "Bar";
+				}
+			}
+			expect(new Thing()).to.print("Thing{}");
+			expect(called).to.be.false;
+		});
+		
+		it("triggers getters if `invokeGetters` is enabled", () => {
+			let called = false;
+			expect({
+				foo: "Foo",
+				get bar(){
+					called = true;
+					return "Bar";
+				},
+				baz: "Baz",
+			}).to.print(`{
+				bar: "Bar"
+				baz: "Baz"
+				foo: "Foo"
+			}`, {invokeGetters: true});
+			expect(called).to.be.true;
+		});
+		
+		it("triggers them only once", () => {
+			let callCount = 0;
+			expect({
+				get foo(){
+					return ++callCount;
+				}
+			}).to.print(`{
+				foo: 1
+			}`, {invokeGetters: true});
+			expect(callCount).to.equal(1);
+		});
+		
+		it("doesn't display write-only properties", () => {
+			let called = false;
+			expect(Object.create(null, {
+				foo: {
+					value: "Foo",
+					enumerable: true,
+				},
+				bar: {
+					set(i){ called = true; +i; },
+					enumerable: true,
+				},
+				baz: {
+					set(i){ called = true; +i; },
+					enumerable: false,
+				},
+			})).to.print(`{
+				foo: "Foo"
+			}`, {invokeGetters: true});
+			expect(called).to.be.false;
+		});
+	});	
 });
