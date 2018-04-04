@@ -76,6 +76,7 @@ describe("Arrays", () => {
 	
 	it("shows named properties", () => {
 		const array = "ABCdef".match(/(\w)(\w)/);
+		delete array.groups;
 		expect(array).to.print(`[
 			"AB"
 			"A"
