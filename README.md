@@ -3,6 +3,7 @@ Print
 
 [![Build status: TravisCI][TravisCI-badge]][TravisCI-link]
 [![Build status: AppVeyor][AppVeyor-badge]][AppVeyor-link]
+[![Coverage status][Coverage-badge]][Coverage-link]
 [![Latest release][NPM-badge]][NPM-link]
 
 Generate a human-readable representation of a value. Focussed on producing clean
@@ -198,6 +199,8 @@ Note that alphabetisation is case-insensitive.
 [AppVeyor-link]:  https://ci.appveyor.com/project/Alhadis/Print
 [TravisCI-badge]: https://img.shields.io/travis/build/Alhadis/Print
 [TravisCI-link]:  https://travis-ci.org/Alhadis/Print
+[Coverage-badge]: https://coveralls.io/repos/github/Alhadis/Print/badge.svg
+[Coverage-link]:  https://coveralls.io/github/Alhadis/Print
 [NPM-badge]:      https://img.shields.io/npm/v/print.svg?colorB=brightgreen
 [NPM-link]:       https://github.com/Alhadis/Print/releases/latest
 [Boolean]:        http://mdn.io/JavaScript/Reference/Global_Objects/Boolean

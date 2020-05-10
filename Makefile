@@ -23,7 +23,16 @@ lint: install
 
 # Run unit-tests
 test: install
-	npx mocha --version
 	if $(OLD_NODE); then npx mocha; else npx c8 mocha; fi
 
 .PHONY: test
+
+
+# Submit coverage information to Coveralls.io
+coverage:
+	if ! $(OLD_NODE); then \
+	$(NPM) coveralls; \
+	npx c8 report --reporter text-lcov | npx coveralls; \
+	fi
+
+.PHONY: coverage
