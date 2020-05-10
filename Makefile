@@ -23,6 +23,6 @@ lint: install
 
 # Run unit-tests
 test: install
-	if $(OLD_NODE); then npx mocha; else npx c8 mocha; fi
+	if $(OLD_NODE); then mocha; else npx c8 mocha; fi
 
 .PHONY: test

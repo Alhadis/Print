@@ -65,7 +65,7 @@ describe("Functions", () => {
 		}`);
 	});
 	
-	(asyncFunc ? it : it.skip)("identifies asynchronous generators", () => {
+	(asyncGen ? it : it.skip)("identifies asynchronous generators", () => {
 		expect(asyncGen).to.print(`async function*(){
 			length: 0
 			name: "bar"
