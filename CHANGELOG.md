@@ -4,9 +4,11 @@ Change Log
 This project honours [Semantic Versioning](http://semver.org/).
 
 
-[Unpublished]
+[v1.2.0]
 ------------------------------------------------------------------------
+**May 11th, 2020**  
 * **Added:** Support for printing `BigInt` values
+* **Fixed:** Buggy handling of subclasses and `Symbol.toStringTag`
 
 
 [v1.1.0]
@@ -37,7 +39,8 @@ Initial release.
 
 
 [Referenced links]:_____________________________________________________
-[Unpublished]: ../../compare/v1.1.0...HEAD
+[Unpublished]: ../../compare/v1.2.0...HEAD
+[v1.2.0]: https://github.com/Alhadis/Print/releases/tag/v1.2.0
 [v1.1.0]: https://github.com/Alhadis/Print/releases/tag/v1.1.0
 [v1.0.2]: https://github.com/Alhadis/Print/releases/tag/v1.0.2
 [v1.0.1]: https://github.com/Alhadis/Print/releases/tag/v1.0.1
