@@ -10,8 +10,8 @@
 	"main": "print.js",
 	"files": ["print.js"],
 	"scripts": {
-		"lint": "npx eslint .",
-		"test": "npx c8 mocha"
+		"lint": "make lint",
+		"test": "make test"
 	},
 	"devDependencies": {
 		"@alhadis/eslint-config": "^2.3.0",

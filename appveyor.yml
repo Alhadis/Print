@@ -1,0 +1,24 @@
+platform: x64
+
+branches:
+    only:
+        - master
+
+environment:
+    matrix:
+        - nodejs_version: "10"
+        - nodejs_version: "12"
+        - nodejs_version: "14"
+
+install:
+    - ps: Install-Product node $env:nodejs_version
+    - choco install gow
+    - npm install
+
+test_script:
+    - node --version
+    - npm --version
+    - refreshenv
+    - make all
+
+build: off
