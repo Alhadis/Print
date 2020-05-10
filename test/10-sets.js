@@ -6,7 +6,7 @@ const A = {
 	colour: 0x00FF00,
 	width: 28.52,
 	height: 10.2,
-	range: [-20, 12]
+	range: [-20, 12],
 };
 
 const B = {
@@ -14,7 +14,7 @@ const B = {
 	type: "Bar",
 	nickname: "Baz",
 	cereal: "Quuz",
-	age: 30
+	age: 30,
 };
 
 describe("Sets", () => {
@@ -92,7 +92,7 @@ describe("Sets", () => {
 		input.name = "Quxabaz";
 		input.customProperty = {
 			foo: "Bar",
-			baz: "Quux"
+			baz: "Quux",
 		};
 		expect(input).to.print(`Set{
 			0 => "A"

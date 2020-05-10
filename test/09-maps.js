@@ -6,7 +6,7 @@ const A = {
 	colour: 0x00FF00,
 	width: 28.52,
 	height: 10.2,
-	range: [-20, 12]
+	range: [-20, 12],
 };
 
 const B = {
@@ -14,7 +14,7 @@ const B = {
 	type: "Bar",
 	nickname: "Baz",
 	cereal: "Quuz",
-	age: 30
+	age: 30,
 };
 
 describe("Maps", () => {
@@ -45,7 +45,7 @@ describe("Maps", () => {
 			["alpha", {a: "a", A: "A"}],
 			["beta",  {b: "b", B: "B"}],
 			["gamma", {g: "g", G: "G"}],
-			["delta", {d: "d", D: "D"}]
+			["delta", {d: "d", D: "D"}],
 		]);
 		expect(map).to.print(`Map{
 			0.key => "alpha"
@@ -78,8 +78,8 @@ describe("Maps", () => {
 		const map = new Map([
 			["alphabeta", {
 				alpha: {a: "a", A: "A"},
-				beta:  {b: "b", B: "B"}
-			}]
+				beta:  {b: "b", B: "B"},
+			}],
 		]);
 		expect(map).to.print(`Map{
 			0.key => "alphabeta"
@@ -107,7 +107,7 @@ describe("Maps", () => {
 	it("prints object keys", () => {
 		const map = new Map([
 			[A, "A"],
-			[B, "B"]
+			[B, "B"],
 		]);
 		expect(map).to.print(`Map{
 			0.key => {
@@ -177,7 +177,7 @@ describe("Maps", () => {
 		input.name = "Quxabaz";
 		input.customProperty = {
 			foo: "Bar",
-			baz: "Quux"
+			baz: "Quux",
 		};
 		
 		expect(input).to.print(`Map{

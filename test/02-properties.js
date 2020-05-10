@@ -11,14 +11,14 @@ describe("Properties", () => {
 				alpha: "A",
 				beta:  "B",
 				quux:  "Q",
-				__FB:  "FooBar"
+				__FB:  "FooBar",
 			},
 			{
 				ZZZZ: 0,
 				aaaa: 1,
 				AaAA: 2,
-				bbBB: 3
-			}
+				bbBB: 3,
+			},
 		];
 		
 		it("alphabetises properties by default", () => {
@@ -75,7 +75,7 @@ describe("Properties", () => {
 				number: 1024 * 768,
 				word: "String",
 				object: {},
-				list: []
+				list: [],
 			};
 			Object.defineProperty(value, "word", {enumerable: false});
 			expect(value).to.print(`{
@@ -206,7 +206,7 @@ describe("Properties", () => {
 			expect({
 				get foo(){
 					return ++callCount;
-				}
+				},
 			}).to.print(`{
 				foo: 1
 			}`, {invokeGetters: true});
@@ -233,5 +233,5 @@ describe("Properties", () => {
 			}`, {invokeGetters: true});
 			expect(called).to.be.false;
 		});
-	});	
+	});
 });

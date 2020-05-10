@@ -11,7 +11,7 @@ try{
 
 describe("Functions", () => {
 	it("prints named functions", () => {
-		const func = function(i){ return i + 2; };
+		function func(i){ return i + 2; }
 		expect(func).to.print(`function(){
 			length: 1
 			name: "func"
@@ -19,7 +19,7 @@ describe("Functions", () => {
 	});
 	
 	it("prints anonymous functions", () => {
-		expect(function(){return "A";}).to.print(`function(){
+		expect(() => "A").to.print(`function(){
 			length: 0
 			name: ""
 		}`);
@@ -29,7 +29,7 @@ describe("Functions", () => {
 		expect({
 			func: function fn(value){
 				return value;
-			}
+			},
 		}).to.print(`{
 			func: function(){
 				length: 1
@@ -39,12 +39,12 @@ describe("Functions", () => {
 	});
 
 	it("identifies generator functions", () => {
-		const foo = function* bar(){ yield 20; };
-		expect(foo).to.print(`function*(){
+		function* bar(){ yield 20; }
+		expect(bar).to.print(`function*(){
 			length: 0
 			name: "bar"
 		}`);
-		expect({method: foo}).to.print(`{
+		expect({method: bar}).to.print(`{
 			method: function*(){
 				length: 0
 				name: "bar"
@@ -52,7 +52,7 @@ describe("Functions", () => {
 		}`);
 	});
 	
-	it("identifies asynchronous functions", asyncFunc ? () => {
+	(asyncFunc ? it : it.skip)("identifies asynchronous functions", () => {
 		expect(asyncFunc).to.print(`async function(){
 			length: 0
 			name: "bar"
@@ -63,9 +63,9 @@ describe("Functions", () => {
 				name: "bar"
 			}
 		}`);
-	} : undefined);
+	});
 	
-	it("identifies asynchronous generators", asyncGen ? () => {
+	(asyncFunc ? it : it.skip)("identifies asynchronous generators", () => {
 		expect(asyncGen).to.print(`async function*(){
 			length: 0
 			name: "bar"
@@ -76,5 +76,5 @@ describe("Functions", () => {
 				name: "bar"
 			}
 		}`);
-	} : undefined);
+	});
 });

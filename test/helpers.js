@@ -18,7 +18,7 @@ module.exports = {
 		filePath = path.resolve(__dirname, filePath);
 		const output = fs.readFileSync(filePath);
 		return asBuffer ? output : output.toString();
-	}
+	},
 };
 
 // Small plugin to strip excess indentation in specs

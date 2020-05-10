@@ -54,20 +54,20 @@ describe("Circular references", () => {
 		const zeta = Symbol("Zeta");
 		const Z = {
 			lowerCase: "z",
-			upperCase: "Z"
+			upperCase: "Z",
 		};
 		const A = {
 			gamma: "G",
 			beta:  "B",
 			alpha: "A",
 			overThere: Math.PI,
-			[zeta]: Z
+			[zeta]: Z,
 		};
 		const B = {
 			delta: "D",
 			epsilon: "E",
 			[zeta]: Z,
-			alpha: A
+			alpha: A,
 		};
 
 		A.omega = B;

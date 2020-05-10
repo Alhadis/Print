@@ -37,7 +37,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	if(escapeChars && "function" !== typeof escapeChars)
 		escapeChars = (function(pattern){
 			return function(input){
-				return input.replace(pattern, function(char){
+				return input.replace(pattern, char => {
 					switch(char){
 						case "\f": return "\\f";
 						case "\n": return "\\n";
@@ -203,8 +203,8 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 				.replace(/\.?0*Z$/m, " GMT")
 				+ "\n";
 			
-			let delta  = Date.now() - input.getTime();
-			let future = delta < 0;
+			let delta = Date.now() - input.getTime();
+			const future = delta < 0;
 			
 			const units = [
 				[1000,  "second"],
@@ -219,7 +219,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 			for(let i = 0, l = units.length; i < l; ++i){
 				const nextUnit = units[i + 1];
 				if(!nextUnit || delta < nextUnit[0]){
-					let [value, name] = units[i];
+					const [value, name] = units[i];
 					
 					// Only bother with floating-point values if it's within the last week
 					delta = (i > 0 && delta < 6048e5)
@@ -227,7 +227,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 						: Math.round(delta / value);
 					
 					output += `${delta} ${name}`;
-					if(delta != 1)
+					if(+delta !== 1)
 						output += "s";
 					break;
 				}
@@ -259,7 +259,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 			break;
 		
 		// Regular expressions
-		case "[object RegExp]":{
+		case "[object RegExp]": {
 			const {lastIndex, source, flags} = input;
 			output = `/${source}/${flags}`;
 			
@@ -309,7 +309,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	// Clip lengthy arrays to a sensible limit
 	let truncationNote = null;
 	if(maxArrayLength !== false && arrayLike && input.length > maxArrayLength){
-		normalKeys = normalKeys.filter(k => +k != k || +k < maxArrayLength);
+		normalKeys = normalKeys.filter(k => !isFinite(+k) || +k < maxArrayLength);
 		truncationNote = `\n\n… ${input.length - maxArrayLength} more values not shown\n`;
 	}
 	
@@ -319,7 +319,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 		let A, B;
 		
 		// Numbers: Compare algebraically
-		if(("0" == a || +a == a) && ("0" == b || +b == b)){
+		if(isFinite(a) && isFinite(b)){
 			A = +a;
 			B = +b;
 		}
@@ -344,17 +344,17 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	// Regular properties
 	normalKeys = Array.from(new Set(normalKeys));
 	for(let i = 0, l = normalKeys.length; i < l; ++i){
-		let key = normalKeys[i];
+		const key = normalKeys[i];
 		
 		// Array's been truncated, and this is the first non-numeric key
-		if(null !== truncationNote && +key != key){
-			output  += truncationNote;
+		if(null !== truncationNote && !isFinite(+key)){
+			output += truncationNote;
 			truncationNote = null;
 		}
 		
-		let accessor = /\W|^\d+$/.test(key) ? `[${key}]` : (name ? "."+key : key);
-		let value    = print(input[key], opts, name + accessor, refs);
-		output      += "\n";
+		const accessor = /\W|^\d+$/.test(key) ? `[${key}]` : (name ? "."+key : key);
+		const value    = print(input[key], opts, name + accessor, refs);
+		output        += "\n";
 		
 		// Arrays: Check if each value's index should be omitted
 		if(ignoreNumbers && /^\d+$/.test(key))

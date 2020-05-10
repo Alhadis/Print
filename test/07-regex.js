@@ -10,7 +10,7 @@ describe("Regular expressions", () => {
 	
 	it("prints hairy regex", () => {
 		let exp = require.resolve("./fixtures/hairy-regex.js");
-		let src = fs.readFileSync(exp).toString().replace(/^(?!\t).+\n?$|^\t+|,$/gm, "").split(/\n/g).filter(Boolean);
+		const src = fs.readFileSync(exp).toString().replace(/^(?!\t).+\n?$|^\t+|,$/gm, "").split(/\n/g).filter(Boolean);
 		exp = require(exp);
 		src.forEach((str, index) => expect(exp[index]).to.print(str));
 	});
@@ -71,11 +71,7 @@ describe("Regular expressions", () => {
 	});
 	
 	it("identifies subclasses", () => {
-		class PCRE extends RegExp{
-			constructor(...args){
-				super(...args);
-			}
-		}
+		class PCRE extends RegExp{}
 		const regex = new PCRE("ABC|XYZ", "gi");
 		expect(regex).to.print(`PCRE{
 			/ABC|XYZ/gi

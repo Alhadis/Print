@@ -14,7 +14,7 @@ describe("Dates", () => {
 			["16.000Z", "16 GMT"],
 			["16.120Z", "16.12 GMT"],
 			["16.050Z", "16.05 GMT"],
-			["16.500Z", "16.5 GMT"]
+			["16.500Z", "16.5 GMT"],
 		];
 		for(const [before, after] of dates){
 			const date = new Date(`2016-12-31 18:02:${before}`);
@@ -68,7 +68,7 @@ describe("Dates", () => {
 					[13680000, "3.8 hours"],
 					[388800000, "4.5 days"],
 					[10512e6,   "4 months"],
-					[126144e6,   "4 years"]
+					[126144e6,   "4 years"],
 				];
 				for(let [offset, diff] of dates){
 					if(future) offset = -offset;
@@ -83,7 +83,7 @@ describe("Dates", () => {
 					[11719800, "3.3 hours"],
 					[487296000, "5.6 days"],
 					[211620, "3.5 minutes"],
-					[13201560, "3.7 hours"]
+					[13201560, "3.7 hours"],
 				];
 				for(let [offset, diff] of dates){
 					if(future) offset = -offset;
@@ -106,7 +106,7 @@ describe("Dates", () => {
 					[1321920000,  "15 days"],
 					[725760000,    "8 days"],
 					[743040000,    "9 days"],
-					[570240000,  "6.6 days"]
+					[570240000,  "6.6 days"],
 				];
 				for(let [offset, diff] of dates){
 					if(future) offset = -offset;
@@ -114,7 +114,7 @@ describe("Dates", () => {
 					const line = print(date).split(/\n/)[2];
 					expect(line).to.equal(`\t${diff} ${suffix}`);
 				}
-			}]
+			}],
 		];
 		
 		for(const [testName, testHandler] of tests)

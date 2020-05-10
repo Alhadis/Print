@@ -14,50 +14,19 @@
 		"test": "mocha"
 	},
 	"devDependencies": {
-		"eslint": "*",
-		"mocha": "*",
-		"chai":  "*"
+		"@alhadis/eslint-config": "^2.3.0",
+		"eslint": "^7.0.0",
+		"mocha": "^7.1.2",
+		"chai":  "^4.2.0"
 	},
-	"eslintIgnore": ["test/fixtures/*.js"],
 	"eslintConfig": {
-		"extends": "eslint:recommended",
-		"env": {
-			"es6": true,
-			"mocha": true,
-			"node": true
-		},
-		"parserOptions": {
-			"ecmaVersion": 2017,
-			"sourceType": "module"
-		},
-		"rules": {
-			"indent": [
-				"error",
-				"tab",
-				{
-					"ignoreComments": true,
-					"SwitchCase": 1
-				}
-			],
-			"linebreak-style": [
-				"error",
-				"unix"
-			],
-			"no-console": 0,
-			"no-empty": 0,
-			"quotes": [
-				"error",
-				"double",
-				{"avoidEscape": true}
-			],
-			"semi": [
-				"error",
-				"always"
-			],
-			"spaced-comment": [
-				"error",
-				"always"
-			]
-		}
+		"extends": "@alhadis",
+		"overrides": [{
+			"files": ["test/08-lists.js"],
+			"rules": {"prefer-rest-params": 0}
+		},{
+			"files": ["test/11-functions.js"],
+			"rules": {"brace-style": 0}
+		}]
 	}
 }
