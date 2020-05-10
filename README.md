@@ -197,7 +197,7 @@ Note that alphabetisation is case-insensitive.
 <!-- Referenced links --------------------------------------------------------->
 [AppVeyor-badge]: https://img.shields.io/appveyor/build/Alhadis/Print
 [AppVeyor-link]:  https://ci.appveyor.com/project/Alhadis/Print
-[TravisCI-badge]: https://img.shields.io/travis/build/Alhadis/Print
+[TravisCI-badge]: https://travis-ci.org/Alhadis/Print.svg?branch=master
 [TravisCI-link]:  https://travis-ci.org/Alhadis/Print
 [Coverage-badge]: https://coveralls.io/repos/github/Alhadis/Print/badge.svg
 [Coverage-link]:  https://coveralls.io/github/Alhadis/Print
