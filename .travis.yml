@@ -12,7 +12,7 @@ branches:
 
 install:
     - command -v 2>&1 >/dev/null npx || npm install --global npx
-    - make install
+    - make -B install
 
 script:
     - make all
