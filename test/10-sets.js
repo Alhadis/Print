@@ -138,4 +138,18 @@ describe("Sets", () => {
 			name: "Quxabaz"
 		}`);
 	});
+	
+	it("indicates references using `->`", () => {
+		const bar = {name: "Bar"};
+		const input = {foo: "Foo", bar, baz: new Set([bar])};
+		expect(input).to.print(`{
+			bar: {
+				name: "Bar"
+			}
+			baz: Set{
+				0 -> bar
+			}
+			foo: "Foo"
+		}`);
+	});
 });

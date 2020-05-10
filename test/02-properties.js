@@ -67,6 +67,22 @@ describe("Properties", () => {
 				Symbol(Fancy-Symbol): true
 			}`, {ampedSymbols: false});
 		});
+		
+		it("alphabetises Symbol-keyed properties", () => {
+			const foo = Symbol("FOO");
+			const bar = Symbol("BAR");
+			const baz = Symbol("BAZ");
+			expect({[foo]: 1, [bar]: 2, [baz]: 3}).to.print(`{
+				@@BAR: 2
+				@@BAZ: 3
+				@@FOO: 1
+			}`);
+			expect({[foo]: 1, [bar]: 2, [baz]: 3}).to.print(`{
+				@@FOO: 1
+				@@BAR: 2
+				@@BAZ: 3
+			}`, {sortProps: false});
+		});
 	});
 	
 	describe("Visibility", () => {

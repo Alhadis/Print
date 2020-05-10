@@ -242,20 +242,26 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 		
 		// Number objects
 		case "[object Number]":
-			output = "\n" + print(Number.prototype.valueOf.call(input), opts);
-			padBeforeProps = true;
+			if(input instanceof Number){
+				output = "\n" + print(Number.prototype.valueOf.call(input), opts);
+				padBeforeProps = true;
+			}
 			break;
 		
 		// String objects
 		case "[object String]":
-			output = "\n" + print(String.prototype.toString.call(input), opts);
-			padBeforeProps = true;
+			if(input instanceof String){
+				output = "\n" + print(String.prototype.toString.call(input), opts);
+				padBeforeProps = true;
+			}
 			break;
 		
 		// Boolean objects
 		case "[object Boolean]":
-			output = "\n" + Boolean.prototype.toString.call(input);
-			padBeforeProps = true;
+			if(input instanceof Boolean){
+				output = "\n" + Boolean.prototype.toString.call(input);
+				padBeforeProps = true;
+			}
 			break;
 		
 		// Regular expressions
@@ -374,9 +380,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	if(sortProps) symbolKeys = symbolKeys.sort((a, b) => {
 		const A = a.toString().toLowerCase();
 		const B = b.toString().toLowerCase();
-		if(A < B) return -1;
-		if(A > B) return 1;
-		return 0;
+		return A.localeCompare(B);
 	});
 	
 	for(let i = 0, l = symbolKeys.length; i < l; ++i){

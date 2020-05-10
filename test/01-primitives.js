@@ -10,4 +10,11 @@ describe("Primitives", () => {
 	it("prints NaN",       () => expect(NaN).to.print("NaN"));
 	it("prints objects",   () => expect({}).to.print("{}"));
 	it("prints symbols",   () => expect(Symbol("Foo")).to.print("Symbol(Foo)"));
+	
+	it("isn't fooled by misleading `@@toStringTag` properties", () => {
+		for(const type of "String Number Boolean Symbol".split(" "))
+			expect({[Symbol.toStringTag]: type}).to.print(`{
+				@@Symbol.toStringTag: "${type}"
+			}`);
+	});
 });

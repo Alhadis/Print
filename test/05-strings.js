@@ -4,10 +4,13 @@ const {expect} = require("chai");
 
 describe("Strings", () => {
 	describe("Primitives", () => {
-		it("prints strings",    () => expect("Foo").to.print('"Foo"'));
-		it("escapes tabs",      () => expect("\t").to.print('"\\t"'));
-		it("escapes newlines",  () => expect("\n").to.print('"\\n"'));
-		it("escapes formfeeds", () => expect("\f").to.print('"\\f"'));
+		it("prints strings",           () => expect("Foo").to.print('"Foo"'));
+		it("escapes tabs",             () => expect("\t").to.print('"\\t"'));
+		it("escapes line-feeds",       () => expect("\n").to.print('"\\n"'));
+		it("escapes form-feeds",       () => expect("\f").to.print('"\\f"'));
+		it("escapes carriage-returns", () => expect("\r").to.print('"\\r"'));
+		it("escapes vertical-tabs",    () => expect("\v").to.print('"\\v"'));
+		it("escapes backslashes",      () => expect("\\").to.print('"\\\\"'));
 		it("doesn't escape whitespace if escapeChars is disabled", () => {
 			expect("\t").to.print('"\t"', {escapeChars: false});
 			expect("\n").to.print('"\n"', {escapeChars: false});

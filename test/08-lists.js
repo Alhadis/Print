@@ -165,6 +165,21 @@ describe("Arrays", () => {
 			});
 		});
 		
+		it("treats a maxArrayLength of 0 as unspecified", () => {
+			expect(input).to.print(`[
+				1
+				2
+				3
+				4
+				5
+				6
+				7
+				8
+				9
+				0
+			]`, {maxArrayLength: 0});
+		});
+		
 		
 		const allOpts = {
 			showArrayLength: true,
