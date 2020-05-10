@@ -13,7 +13,6 @@ environment:
 install:
     - ps: Install-Product node $env:nodejs_version
     - choco install gow
-    - npm install
 
 test_script:
     - node --version
