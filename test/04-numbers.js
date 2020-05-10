@@ -2,6 +2,7 @@
 
 const {expect} = require("chai");
 
+const haveBigInts = "function" === typeof BigInt;
 const MathConstants = [
 	"E",
 	"LN10",
@@ -29,6 +30,11 @@ describe("Numbers", () => {
 		it("prints positive floats",   () => expect(4.2).to.print("4.2"));
 		it("prints negative floats",   () => expect(-4.2).to.print("-4.2"));
 		it("shortens long numbers",    () => expect(1e64).to.print("1e+64"));
+		
+		(haveBigInts ? it : it.skip)("prints bigints", () => {
+			expect(BigInt(42)).to.print("42n");
+			expect(BigInt(-42)).to.print("-42n");
+		});
 		
 		it("identifies Math.* constants", () => {
 			for(const constant of MathConstants)

@@ -12,7 +12,7 @@ describe("Primitives", () => {
 	it("prints symbols",   () => expect(Symbol("Foo")).to.print("Symbol(Foo)"));
 	
 	it("isn't fooled by misleading `@@toStringTag` properties", () => {
-		for(const type of "String Number Boolean Symbol".split(" "))
+		for(const type of "String Number Boolean Symbol BigInt".split(" "))
 			expect({[Symbol.toStringTag]: type}).to.print(`{
 				@@Symbol.toStringTag: "${type}"
 			}`);

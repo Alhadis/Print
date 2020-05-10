@@ -93,6 +93,10 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 			if("number" !== typeof input) break;
 			return input.toString();
 		
+		case "[object BigInt]":
+			if("bigint" !== typeof input) break;
+			return input.toString() + "n";
+		
 		case "[object Symbol]":
 			if("symbol" !== typeof input) break;
 			return input.toString();

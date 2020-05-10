@@ -4,6 +4,11 @@ Change Log
 This project honours [Semantic Versioning](http://semver.org/).
 
 
+[Unpublished]
+------------------------------------------------------------------------
+* **Added:** Support for printing `BigInt` values
+
+
 [v1.1.0]
 ------------------------------------------------------------------------
 **March 21st, 2018**  
