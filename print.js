@@ -19,20 +19,18 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	
 	// Handle options and defaults
 	let {
-		ampedSymbols,
-		escapeChars,
+		ampedSymbols = true,
+		escapeChars = /(?! )\s|\\/g,
 		invokeGetters,
-		maxArrayLength,
+		maxArrayLength = 100,
 		showAll,
 		showArrayIndices,
 		showArrayLength,
-		sortProps,
+		sortProps = true,
 	} = opts;
 	
-	ampedSymbols   = undefined === ampedSymbols   ? true : ampedSymbols;
-	escapeChars    = undefined === escapeChars    ? /(?!\x20)\s|\\/g : escapeChars;
-	sortProps      = undefined === sortProps      ? true  : sortProps;
-	maxArrayLength = undefined === maxArrayLength ? 100   : (!+maxArrayLength ? false : maxArrayLength);
+	if(!+maxArrayLength)
+		maxArrayLength = false;
 
 	if(escapeChars && "function" !== typeof escapeChars)
 		escapeChars = (function(pattern){
@@ -87,25 +85,11 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	}
 	
 	// Basic data types
-	const type = Object.prototype.toString.call(input);
-	switch(type){
-		case "[object Number]":
-			if("number" !== typeof input) break;
-			return input.toString();
-		
-		case "[object BigInt]":
-			if("bigint" !== typeof input) break;
-			return input.toString() + "n";
-		
-		case "[object Symbol]":
-			if("symbol" !== typeof input) break;
-			return input.toString();
-		
-		case "[object String]":
-			if("string" !== typeof input) break;
-			if(escapeChars)
-				input = escapeChars(input);
-			return `"${input}"`;
+	switch(typeof input){
+		case "symbol":
+		case "number": return input.toString();
+		case "bigint": return input.toString() + "n";
+		case "string": return `"${escapeChars ? escapeChars(input) : input}"`;
 	}
 	
 	// Guard against circular references
@@ -146,7 +130,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	
 	
 	// Maps
-	if("[object Map]" === type){
+	if(input instanceof Map){
 		typeName = "Map";
 		
 		if(input.size){
@@ -172,7 +156,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	
 	
 	// Sets
-	else if("[object Set]" === type){
+	else if(input instanceof Set){
 		typeName = "Set";
 		
 		if(input.size){
@@ -241,56 +225,46 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	}
 	
 	
-	// Objects and functions
-	else switch(type){
+	// Number objects
+	else if(input instanceof Number){
+		output = "\n" + print(Number.prototype.valueOf.call(input), opts);
+		padBeforeProps = true;
+	}
+	
+	// String objects
+	else if(input instanceof String){
+		output = "\n" + print(String.prototype.toString.call(input), opts);
+		padBeforeProps = true;
+	}
 		
-		// Number objects
-		case "[object Number]":
-			if(input instanceof Number){
-				output = "\n" + print(Number.prototype.valueOf.call(input), opts);
-				padBeforeProps = true;
-			}
-			break;
+	// Boolean objects
+	else if(input instanceof Boolean){
+		output = "\n" + Boolean.prototype.toString.call(input);
+		padBeforeProps = true;
+	}
+	
+	// Regular expressions
+	else if(input instanceof RegExp){
+		const {lastIndex, source, flags} = input;
+		output = `/${source}/${flags}`;
 		
-		// String objects
-		case "[object String]":
-			if(input instanceof String){
-				output = "\n" + print(String.prototype.toString.call(input), opts);
-				padBeforeProps = true;
-			}
-			break;
+		// Return early if RegExp isn't subclassed and has no unusual properties
+		if(RegExp === input.constructor && 0 === lastIndex && 0 === normalKeys.length)
+			return output;
 		
-		// Boolean objects
-		case "[object Boolean]":
-			if(input instanceof Boolean){
-				output = "\n" + Boolean.prototype.toString.call(input);
-				padBeforeProps = true;
-			}
-			break;
-		
-		// Regular expressions
-		case "[object RegExp]": {
-			const {lastIndex, source, flags} = input;
-			output = `/${source}/${flags}`;
-			
-			// Return early if RegExp isn't subclassed and has no unusual properties
-			if(RegExp === input.constructor && 0 === lastIndex && 0 === normalKeys.length)
-				return output;
-			
-			else{
-				output = "\n" + output;
-				padBeforeProps = true;
-				if(0 !== lastIndex)
-					normalKeys.push("lastIndex");
-			}
-			break;
+		else{
+			output = "\n" + output;
+			padBeforeProps = true;
+			if(0 !== lastIndex)
+				normalKeys.push("lastIndex");
 		}
+	}
 		
-		// Anything else
-		default:
-			arrayLike     = "function" === typeof input[Symbol.iterator];
-			isFunc        = "function" === typeof input;
-			ignoreNumbers = !showArrayIndices && arrayLike;
+	// Anything else
+	else{
+		arrayLike     = "function" === typeof input[Symbol.iterator];
+		isFunc        = "function" === typeof input;
+		ignoreNumbers = !showArrayIndices && arrayLike;
 	}
 	
 	
@@ -381,11 +355,8 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	
 	// Properties keyed by Symbols
 	symbolKeys = Array.from(new Set(symbolKeys));
-	if(sortProps) symbolKeys = symbolKeys.sort((a, b) => {
-		const A = a.toString().toLowerCase();
-		const B = b.toString().toLowerCase();
-		return A.localeCompare(B);
-	});
+	if(sortProps) symbolKeys = symbolKeys.sort((a, b) =>
+		String(a).toLowerCase().localeCompare(String(b).toLowerCase()));
 	
 	for(let i = 0, l = symbolKeys.length; i < l; ++i){
 		const symbol = symbolKeys[i];
@@ -404,7 +375,7 @@ function print(input, opts = {}, /* …Internal:*/ name = "", refs = null){
 	
 	
 	// Tweak output based on the value's type
-	if("[object Arguments]" === type)
+	if("[object Arguments]" === {}.toString.call(input))
 		typeName = "Arguments";
 	
 	else{
