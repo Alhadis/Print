@@ -28,6 +28,9 @@
 		},{
 			"files": ["test/11-functions.js"],
 			"rules": {"brace-style": 0}
+		},{
+			"files": ["test/fixtures/hairy-regex.js"],
+			"rules": {"no-useless-escape": 0}
 		}]
 	}
 }
