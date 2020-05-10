@@ -1,6 +1,10 @@
 Print
 =====
 
+[![Build status: TravisCI][TravisCI-badge]][TravisCI-link]
+[![Build status: AppVeyor][AppVeyor-badge]][AppVeyor-link]
+[![Latest release][NPM-badge]][NPM-link]
+
 Generate a human-readable representation of a value. Focussed on producing clean
 and *accurate* depictions of data. Suitable for debugging and generating diffs.
 
@@ -189,9 +193,15 @@ Note that alphabetisation is case-insensitive.
 
 
 
-[Referenced links]: ____________________________________________________________
-[Boolean]:   http://mdn.io/JavaScript/Reference/Global_Objects/Boolean
-[Function]:  http://mdn.io/JavaScript/Reference/Global_Objects/Function
-[Number]:    http://mdn.io/JavaScript/Reference/Global_Objects/Number
-[RegExp]:    http://mdn.io/JavaScript/Reference/Global_Objects/RegExp
-[Symbol]:    http://mdn.io/JavaScript/Reference/Global_Objects/Symbol
+<!-- Referenced links --------------------------------------------------------->
+[AppVeyor-badge]: https://img.shields.io/appveyor/build/Alhadis/Print
+[AppVeyor-link]:  https://ci.appveyor.com/project/Alhadis/Print
+[TravisCI-badge]: https://img.shields.io/travis/build/Alhadis/Print
+[TravisCI-link]:  https://travis-ci.org/Alhadis/Print
+[NPM-badge]:      https://img.shields.io/npm/v/print.svg?colorB=brightgreen
+[NPM-link]:       https://github.com/Alhadis/Print/releases/latest
+[Boolean]:        http://mdn.io/JavaScript/Reference/Global_Objects/Boolean
+[Function]:       http://mdn.io/JavaScript/Reference/Global_Objects/Function
+[Number]:         http://mdn.io/JavaScript/Reference/Global_Objects/Number
+[RegExp]:         http://mdn.io/JavaScript/Reference/Global_Objects/RegExp
+[Symbol]:         http://mdn.io/JavaScript/Reference/Global_Objects/Symbol
