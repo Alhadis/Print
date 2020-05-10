@@ -9,7 +9,7 @@ OLD_NODE = case "`node -v`" in v[68].*) true ;; *) false ;; esac
 
 node_modules:
 	if $(OLD_NODE); \
-	then $(NPM) npx mocha@5.2.0 chai@4.2.0; \
+	then $(NPM) mocha@5.2.0 chai@4.2.0; \
 	else $(NPM); \
 	fi
 
@@ -23,7 +23,6 @@ lint: install
 
 # Run unit-tests
 test: install
-	export PATH="node_modules/.bin:$$PATH"; \
 	if $(OLD_NODE); then npx mocha; else npx c8 mocha; fi
 
 .PHONY: test
