@@ -1,9 +1,6 @@
 language: node_js
 node_js:
-    - 6
-    - 8
-    - 10
-    - 12
+    - 13
     - 14
 
 branches:
@@ -11,8 +8,7 @@ branches:
         - master
 
 install:
-    - command -v 2>&1 >/dev/null npx || npm install --global npx
-    - make -B install
+    - make install
 
 script:
     - make all

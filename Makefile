@@ -4,35 +4,27 @@ all: install lint test
 # Install and link development dependencies
 install: node_modules
 
-NPM      = npm install --quiet --no-save --no-package-lock
-OLD_NODE = case "`node -v`" in v[68].*) true ;; *) false ;; esac
-
 node_modules:
-	if $(OLD_NODE); \
-	then $(NPM) mocha@5.2.0 chai@4.2.0; \
-	else $(NPM); \
-	fi
+	npm install --quiet --no-save --no-package-lock
 
 
 # Check source for errors and style violations
 lint: install
-	$(OLD_NODE) || npx eslint .
+	npx eslint .
 
 .PHONY: lint
 
 
 # Run unit-tests
 test: install
-	if $(OLD_NODE); then npx mocha; else npx c8 mocha; fi
+	npx c8 mocha
 
 .PHONY: test
 
 
 # Submit coverage information to Coveralls.io
 coverage:
-	if ! $(OLD_NODE); then \
-	$(NPM) coveralls; \
-	npx c8 report --reporter text-lcov | npx coveralls; \
-	fi
+	npm install coveralls
+	npx c8 report --reporter text-lcov | npx coveralls
 
 .PHONY: coverage

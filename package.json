@@ -6,9 +6,14 @@
 	"keywords": ["stringify", "trace", "debug", "outline", "format", "string"],
 	"repository": "https://github.com/Alhadis/Print",
 	"license": "ISC",
-	"engines": { "node": ">=6.0.0" },
-	"main": "print.js",
-	"files": ["print.js"],
+	"engines": {
+		"node": ">=13.2.0",
+		"deno": ">=1.0.0",
+		"quickjs": ">=2020-01-19"
+	},
+	"main": "print.mjs",
+	"type": "module",
+	"files": ["print.mjs"],
 	"scripts": {
 		"lint": "make lint",
 		"test": "make test"
@@ -17,7 +22,7 @@
 		"@alhadis/eslint-config": "^2.3.1",
 		"c8": "^7.1.2",
 		"eslint": "^7.0.0",
-		"mocha": "^5.2.0",
+		"mocha": "^7.1.2",
 		"chai":  "^4.2.0"
 	},
 	"eslintConfig": {
