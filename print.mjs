@@ -8,8 +8,9 @@
  * @param  {Object}  [opts]               - Additional settings for refining output
  * @param  {Boolean} [opts.all]           - Display non-enumerable properties
  * @param  {Boolean} [opts.followGetters] - Invoke getter functions
- * @param  {Boolean} [opts.noHex]         - Don't format byte-arrays as hexadecimal
  * @param  {Boolean} [opts.indexes]       - Display the indexes of iterable entries
+ * @param  {Boolean} [opts.noHex]         - Don't format byte-arrays as hexadecimal
+ * @param  {Boolean} [opts.sortProps]     - Sort properties alphabetically
  * @param  {WeakMap} [refs=new WeakMap()] - Tracked object references (internal-use only)
  * @param  {String}  [path=""]            - Accessor string used to identify a reference
  * @return {String}
@@ -165,9 +166,13 @@ export default function print(value, ...args){
 		}));
 	}
 	
+	// Handle property sorting
+	props.push(...Object.getOwnPropertySymbols(value));
+	opts.sortProps && props.sort((a, b) =>
+		String(a).toLowerCase().localeCompare(String(b).toLowerCase()));
+	
 	// Inspect each property we're interested in displaying
 	const propLines = [];
-	props.push(...Object.getOwnPropertySymbols(value));
 	for(const prop of props){
 		const desc = Object.getOwnPropertyDescriptor(value, prop);
 		
