@@ -98,7 +98,7 @@ export default function print(value, ...args){
 		for(let [k, v] of value){
 			k = recurse(k, null, `${path}[${index}.key]`);
 			v = recurse(v, null, `${path}[${index}.value]`);
-			k = `${index}.key   ${k.startsWith("-> ") ? "" : "=> "}${k}`;
+			k = `${index}.key ${  k.startsWith("-> ") ? "" : "=> "}${k}`;
 			v = `${index}.value ${v.startsWith("-> ") ? "" : "=> "}${v}`;
 			linesBefore.push(k, v);
 			++index;
