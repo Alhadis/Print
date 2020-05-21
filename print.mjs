@@ -17,7 +17,7 @@
 export default function print(value, ...args){
 	
 	// Resolve arguments
-	if(1 === args.length && args[1] && "object" === typeof args[1])
+	if(1 === args.length && args[0] && "object" === typeof args[0])
 		args.unshift(null);
 	
 	let [key, opts = {}, refs = new WeakMap(), path = ""] = args;
