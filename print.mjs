@@ -195,7 +195,7 @@ export default function print(value, ...args){
 	// If there's nothing of interest in a RegExp or Date object, use a 1-line form
 	const numProps = propLines.length;
 	if(!numProps && ("RegExp" === type || "Date" === type) && 1 === linesBefore.length)
-		value = before;
+		value = linesBefore;
 	
 	// Otherwise, tally our lists and inject padding where it's needed
 	else{
