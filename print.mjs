@@ -115,6 +115,11 @@ export default function print(value, ...args){
 		}
 	}
 	
+	// Boxed primitives
+	else if(value instanceof Boolean) linesBefore.push(recurse(true.valueOf.call(value)));
+	else if(value instanceof Number)  linesBefore.push(recurse(1.  .valueOf.call(value)));
+	else if(value instanceof String)  linesBefore.push(recurse(""  .valueOf.call(value)));
+	
 	// Something that quacks like an array
 	else if(isArrayLike || isArrayBuffer){
 		props = props.filter(x => +x !== ~~x || +x < 0);
