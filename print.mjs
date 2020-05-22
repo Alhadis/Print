@@ -75,9 +75,9 @@ export default function print(value, ...args){
 	const linesBefore   = [];
 	const linesAfter    = [];
 	const recurse       = (v, k, p) => print(v, k, opts, refs, p || path);
-	const isArrayLike   = Symbol.iterator in value && +value.length >= 0;
 	const isArrayBuffer = value instanceof ArrayBuffer;
 	let isArgumentList  = false;
+	let isArrayLike     = Symbol.iterator in value && +value.length >= 0;
 	let props           = Object.getOwnPropertyNames(value);
 	
 	// Handle null-prototypes
@@ -128,7 +128,7 @@ export default function print(value, ...args){
 	// Boxed primitives
 	else if(value instanceof Boolean) linesBefore.push(recurse(true.valueOf.call(value)));
 	else if(value instanceof Number)  linesBefore.push(recurse(1.  .valueOf.call(value)));
-	else if(value instanceof String)  linesBefore.push(recurse(""  .valueOf.call(value)));
+	else if(value instanceof String)  linesBefore.push(recurse(""  .valueOf.call(value))), isArrayLike = false;
 	
 	// Something that quacks like an array
 	else if(isArrayLike || isArrayBuffer){
