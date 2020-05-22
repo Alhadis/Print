@@ -24,7 +24,31 @@ export default function print(value, ...args){
 	let [key, opts = {}, refs = new WeakMap(), path = ""] = args;
 	let type = typeof value;
 	
-	key  = null != key ? String(key) : "";
+	// Escape control characters in string output
+	const esc = input => {
+		input = [...String(input)];
+		let result = "";
+		const {length} = input;
+		for(let ord, chr, i = 0; i < length; ++i)
+			switch(chr = input[i]){
+				case "\0":   result += "\\0";  break;
+				case "\b":   result += "\\b";  break;
+				case "\t":   result += "\\t";  break;
+				case "\n":   result += "\\n";  break;
+				case "\f":   result += "\\f";  break;
+				case "\r":   result += "\\r";  break;
+				case "\v":   result += "\\v";  break;
+				case "\\":   result += "\\\\"; break;
+				case "\x07": result += "\\a";  break;
+				case "\x1B": result += "\\e";  break;
+				default:     result += (ord = chr.charCodeAt(0)) < 256 && !(96 & ord)
+					? "\\x" + ord.toString(16).padStart(2, "0").toUpperCase()
+					: chr;
+			}
+		return result;
+	};
+	
+	key  = null != key ? esc(key) : "";
 	path = path ? `${path}.${key}` : key || "{root}";
 	key += key  ? ": " : "";
 	
@@ -41,7 +65,7 @@ export default function print(value, ...args){
 	switch(type){
 		// Fallback for unrecognised (future) primitive types
 		default:
-			return key + String(value);
+			return key + esc(value);
 		
 		case "bigint":
 		case "number":
@@ -60,7 +84,7 @@ export default function print(value, ...args){
 			return key + value;
 		
 		case "string":
-			return key + `"${value}"`;
+			return key + `"${esc(value)}"`;
 		
 		// Dummy entries needed to keep `default` case from matching objects
 		case "object":
@@ -96,7 +120,7 @@ export default function print(value, ...args){
 			}
 			// Fall-through
 		case Array:  type = ""; break;
-		default:     type = type.constructor.name;
+		default:     type = esc(type.constructor.name);
 	}
 	
 	// Dates
