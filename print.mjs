@@ -85,7 +85,7 @@ export default function print(value, ...args){
 	if(!type)
 		linesBefore.push("Null prototype");
 	
-	// Keep object representations terse if possible
+	// Resolve type annotation
 	else switch(type.constructor){
 		case Object:
 			// Identify argument lists
@@ -96,13 +96,21 @@ export default function print(value, ...args){
 			}
 			// Fall-through
 		case Array:  type = ""; break;
-		case Date:   type = "Date";   linesBefore.push(value.toISOString()); break;
-		case RegExp: type = "RegExp"; linesBefore.push(value.toString());    break;
 		default:     type = type.constructor.name;
 	}
 	
+	// Dates
+	if(value instanceof Date){
+		const str = Date.prototype.toString.call(value);
+		linesBefore.push("Invalid Date" === str ? str : Date.prototype.toISOString.call(value));
+	}
+	
+	// Regular expressions
+	else if(value instanceof RegExp)
+		linesBefore.push(RegExp.prototype.toString.call(value));
+	
 	// Maps
-	if(value instanceof Map){
+	else if(value instanceof Map){
 		let index = 0;
 		for(let [k, v] of value){
 			k = recurse(k, null, `${path}[${index}.key]`);
