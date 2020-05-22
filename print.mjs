@@ -101,9 +101,11 @@ export default function print(value, ...args){
 			v = recurse(v, null, `${path}[${index}.value]`);
 			k = `${index}.key ${  k.startsWith("-> ") ? "" : "=> "}${k}`;
 			v = `${index}.value ${v.startsWith("-> ") ? "" : "=> "}${v}`;
-			linesBefore.push(k, v);
+			linesBefore.push(k, v, "");
 			++index;
 		}
+		// Remove trailing blank line
+		linesBefore.pop();
 	}
 	
 	// Sets
@@ -111,7 +113,7 @@ export default function print(value, ...args){
 		let index = 0;
 		for(let v of value){
 			v = recurse(v, null, `${path}[${index}]`);
-			linesBefore.push(index++ + (v.startsWith("-> ") ? "" : "=> ") + v);
+			linesBefore.push(index++ + (v.startsWith("-> ") ? " " : " => ") + v);
 		}
 	}
 	
