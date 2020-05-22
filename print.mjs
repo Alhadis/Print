@@ -77,6 +77,7 @@ export default function print(value, ...args){
 	const recurse       = (v, k, p) => print(v, k, opts, refs, p || path);
 	const isArrayLike   = Symbol.iterator in value && +value.length >= 0;
 	const isArrayBuffer = value instanceof ArrayBuffer;
+	let isArgumentList  = false;
 	let props           = Object.getOwnPropertyNames(value);
 	
 	// Handle null-prototypes
@@ -86,8 +87,15 @@ export default function print(value, ...args){
 	
 	// Keep object representations terse if possible
 	else switch(type.constructor){
-		case Array:
-		case Object: type = ""; break;
+		case Object:
+			// Identify argument lists
+			if(isArrayLike && !value[Symbol.toStringTag] && "[object Arguments]" === {}.toString.call(value)){
+				isArgumentList = true;
+				type = "Arguments";
+				break;
+			}
+			// Fall-through
+		case Array:  type = ""; break;
 		case Date:   type = "Date";   linesBefore.push(value.toISOString()); break;
 		case RegExp: type = "RegExp"; linesBefore.push(value.toString());    break;
 		default:     type = type.constructor.name;
@@ -189,7 +197,7 @@ export default function print(value, ...args){
 		
 		// Getter and/or setter
 		if(desc.get || desc.set){
-			if(desc.get && opts.followGetters)
+			if(desc.get && opts.followGetters && !(isArgumentList && "callee" === prop))
 				propLines.push(recurse(value[prop], prop));
 			else{
 				if(desc.get) propLines.push(recurse(desc.get, `get ${prop}`));
