@@ -48,8 +48,9 @@ export default function print(value, ...args){
 		return result;
 	};
 	
+	// Resolve identifiers
 	key  = null != key ? esc(key) : "";
-	path = path ? `${path}.${key}` : key || "{root}";
+	path = path ? (key ? path + "." + key : path) : key || "{root}";
 	key += key  ? ": " : "";
 	
 	// Special primitives that need no introduction
