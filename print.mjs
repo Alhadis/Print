@@ -122,7 +122,6 @@ export default function print(value, ...args){
 	const linesAfter    = [];
 	const recurse       = (v, k, p) => print(v, k, opts, refs, p || path);
 	const isArrayBuffer = value instanceof ArrayBuffer;
-	let isArgumentList  = false;
 	let isArrayLike     = Symbol.iterator in value && +value.length >= 0;
 	let props           = Object.getOwnPropertyNames(value);
 	
@@ -136,7 +135,6 @@ export default function print(value, ...args){
 		case Object:
 			// Identify argument lists
 			if(isArrayLike && !value[Symbol.toStringTag] && "[object Arguments]" === {}.toString.call(value)){
-				isArgumentList = true;
 				type = "Arguments";
 				break;
 			}
@@ -255,8 +253,12 @@ export default function print(value, ...args){
 		
 		// Getter and/or setter
 		if(desc.get || desc.set){
-			if(desc.get && opts.followGetters && !(isArgumentList && "callee" === prop))
-				propLines.push(recurse(value[prop], prop));
+			if(desc.get && opts.followGetters){
+				let result;
+				try{ result = value[prop]; }
+				catch(e){ result = e; }
+				propLines.push(recurse(result, prop));
+			}
 			else{
 				if(desc.get) propLines.push(recurse(desc.get, `get ${prop}`));
 				if(desc.set) propLines.push(recurse(desc.set, `set ${prop}`));
