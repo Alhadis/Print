@@ -207,7 +207,7 @@ export default function print(value, ...args){
 			[].forEach.call(entries, (x, i) => {
 				if(lastIndex < i - 1)
 					linesBefore.push(`empty × ${i - lastIndex - 1}`);
-				linesBefore.push(recurse(x, opts.indexes ? i : null, `${path}[${i}]`));
+				linesBefore.push(recurse(x, opts.indexes && !isArrayBuffer ? i : null, `${path}[${i}]`));
 				lastIndex = i;
 			});
 			if(lastIndex < length - 1)
