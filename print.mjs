@@ -9,6 +9,7 @@
  * @param  {Boolean} [opts.all]           - Display non-enumerable properties
  * @param  {Boolean} [opts.followGetters] - Invoke getter functions
  * @param  {Boolean} [opts.indexes]       - Display the indexes of iterable entries
+ * @param  {Boolean} [opts.noAmp]         - Don't identify well-known symbols as `@@…`
  * @param  {Boolean} [opts.noHex]         - Don't format byte-arrays as hexadecimal
  * @param  {Boolean} [opts.sortProps]     - Sort properties alphabetically
  * @param  {WeakMap} [refs=new WeakMap()] - Tracked object references (internal-use only)
@@ -48,8 +49,25 @@ export default function print(value, ...args){
 		return result;
 	};
 	
+	// Format symbols and property names
+	const formatKey = input => {
+		if("symbol" === typeof input){
+			// Identify well-known symbols using ECMA-262's @@ notation
+			if(!opts.noAmp){
+				const name = String(input).slice(14, -1);
+				if(input === Symbol[name])
+					return "@@" + esc(name);
+			}
+			input = esc(String(input));
+			return input.startsWith("Symbol(") && input.endsWith(")")
+				? input
+				: `Symbol(${input})`;
+		}
+		return esc(String(input));
+	};
+	
 	// Resolve identifiers
-	key  = null != key ? esc(key) : "";
+	key  = null != key ? formatKey(key) : "";
 	path = path ? (key ? path + "." + key : path) : key || "{root}";
 	key += key  ? ": " : "";
 	
@@ -67,6 +85,9 @@ export default function print(value, ...args){
 		// Fallback for unrecognised (future) primitive types
 		default:
 			return key + esc(value);
+		
+		case "symbol":
+			return key + formatKey(value);
 		
 		case "bigint":
 		case "number":
