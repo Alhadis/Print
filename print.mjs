@@ -186,9 +186,12 @@ export default function print(value, ...args){
 	
 	// Something that quacks like an array
 	else if(isArrayLike || isArrayBuffer){
-		props = props.filter(x => +x !== ~~x || +x < 0);
 		const entries = isArrayBuffer ? new Uint8Array(value) : value;
 		const {length} = entries;
+		
+		// Filter out indexed properties, provided they're genuine
+		if(!isArrayBuffer)
+			props = props.filter(x => +x !== ~~x || +x < 0 || x > length - 1);
 		
 		// Byte-arrays: format entries in hexadecimal, and arrange in od(1)-like columns
 		if(!opts.noHex && entries instanceof Uint8Array)
