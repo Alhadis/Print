@@ -73,6 +73,8 @@ export default function print(value, ...args){
 	
 	// Special primitives that need no introduction
 	switch(value){
+		case true:
+		case false:
 		case Infinity:
 		case -Infinity:
 		case null:
@@ -82,11 +84,7 @@ export default function print(value, ...args){
 	
 	// Primitive values
 	switch(type){
-		// Fallback for unrecognised (future) primitive types
 		default:
-			return key + esc(value);
-		
-		case "symbol":
 			return key + formatKey(value);
 		
 		case "bigint":
