@@ -187,29 +187,28 @@ export default function print(value, ...args){
 	// Something that quacks like an array
 	else if(isArrayLike || isArrayBuffer){
 		props = props.filter(x => +x !== ~~x || +x < 0);
+		const entries = isArrayBuffer ? new Uint8Array(value) : value;
+		const {length} = entries;
 		
 		// Byte-arrays: format entries in hexadecimal, and arrange in od(1)-like columns
-		if(!opts.noHex && (isArrayBuffer || value instanceof Uint8Array)){
-			const bytes = [...isArrayBuffer ? new Uint8Array(value) : value];
-			const {length} = bytes;
+		if(!opts.noHex && entries instanceof Uint8Array)
 			for(let i = 0; i < length; i += 16){
 				const offset = "│0x" + i.toString(16).padStart(8, "0").toUpperCase() + "│";
-				const row = bytes.slice(i, i + 16).map(x => x.toString(16).padStart(2, "0").toUpperCase()).join(" ");
+				const row = [...entries.subarray(i, i + 16)].map(x => x.toString(16).padStart(2, "0").toUpperCase()).join(" ");
 				linesBefore.push(offset + " " + row);
 			}
-		}
 		
 		// Otherwise, list contents vertically
 		else{
 			let lastIndex = -1;
-			[].forEach.call(value, (x, i) => {
+			[].forEach.call(entries, (x, i) => {
 				if(lastIndex < i - 1)
 					linesBefore.push(`empty × ${i - lastIndex - 1}`);
 				linesBefore.push(recurse(x, opts.indexes ? i : null, `${path}[${i}]`));
 				lastIndex = i;
 			});
-			if(lastIndex < value.length - 1)
-				linesBefore.push(`empty × ${value.length - lastIndex - 1}`);
+			if(lastIndex < length - 1)
+				linesBefore.push(`empty × ${length - lastIndex - 1}`);
 		}
 	}
 	
