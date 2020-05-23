@@ -201,13 +201,15 @@ export default function print(value, ...args){
 		
 		// Otherwise, list contents vertically
 		else{
-			let lastIndex = 0;
+			let lastIndex = -1;
 			[].forEach.call(value, (x, i) => {
 				if(lastIndex < i - 1)
-					linesBefore.push(`empty × ${i - (1 + lastIndex)}`);
+					linesBefore.push(`empty × ${i - lastIndex - 1}`);
 				linesBefore.push(recurse(x, opts.indexes ? i : null, `${path}[${i}]`));
 				lastIndex = i;
 			});
+			if(lastIndex < value.length - 1)
+				linesBefore.push(`empty × ${value.length - lastIndex - 1}`);
 		}
 	}
 	
