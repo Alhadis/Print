@@ -1,44 +1,23 @@
-"use strict";
+import print from "../print.mjs";
 
-const fs    = require("fs");
-const path  = require("path");
-const Chai  = require("chai");
-const print = require("../print.js");
-
-module.exports = {
-	
-	/**
-	 * Read the entire content of a file into memory.
-	 *
-	 * @param {String} filePath
-	 * @param {Boolean} [asBuffer=false] - Keep the data as a Buffer object.
-	 * @return {String|Buffer}
-	 */
-	slurp(filePath, asBuffer = false){
-		filePath = path.resolve(__dirname, filePath);
-		const output = fs.readFileSync(filePath);
-		return asBuffer ? output : output.toString();
-	},
-};
-
-// Small plugin to strip excess indentation in specs
-Chai.Assertion.addMethod("print", function(expected, options){
-	const subject = Chai.util.flag(this, "object");
-	const printed = print(subject, options);
-	
-	if("string" === typeof expected && /\n/.test(expected))
-		expected = deindent(expected);
-	
-	this.assert(
-		expected === printed,
-		"expected #{this} to print #{exp}",
-		"expected #{this} not to print #{exp}",
-		printed,
-		expected,
-		true
-	);
-});
-
+export function expect(actual){
+	return {
+		get to()    { return this; },
+		get be()    { return this; },
+		get true()  { return this.equal(true,  "Expected value to be true"); },
+		get false() { return this.equal(false, "Expected value to be false"); },
+		equal(expected, msg = "Expected values to be equal"){
+			if(actual === expected) return this;
+			throw Object.assign(new Error(msg), {actual, expected});
+		},
+		print(expected, opts = {}){
+			if("string" === typeof expected && ~expected.indexOf("\n"))
+				expected = deindent(expected);
+			actual = print(actual, opts);
+			return this.equal(expected);
+		},
+	};
+}
 
 /**
  * Strip excess whitespace from a multiline string.
