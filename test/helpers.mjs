@@ -8,12 +8,14 @@ export function expect(actual){
 		get false() { return this.equal(false, "Expected value to be false"); },
 		equal(expected, msg = "Expected values to be equal"){
 			if(actual === expected) return this;
+			actual   = actual  .replace(/\x1B/g, "\\e");
+			expected = expected.replace(/\x1B/g, "\\e");
 			throw Object.assign(new Error(msg), {actual, expected});
 		},
-		print(expected, opts = {}){
+		print(expected, ...args){
 			if("string" === typeof expected && ~expected.indexOf("\n"))
 				expected = deindent(expected);
-			actual = print(actual, opts);
+			actual = print(actual, ...args);
 			return this.equal(expected);
 		},
 	};

@@ -26,24 +26,24 @@ export default function print(value, ...args){
 	let type = typeof value;
 	
 	// Escape control characters in string output
-	const esc = input => {
+	const esc = (input, prevColour = off, escColour = escape) => {
 		input = [...String(input)];
 		let result = "";
 		const {length} = input;
 		for(let ord, chr, i = 0; i < length; ++i)
 			switch(chr = input[i]){
-				case "\0":   result += "\\0";  break;
-				case "\b":   result += "\\b";  break;
-				case "\t":   result += "\\t";  break;
-				case "\n":   result += "\\n";  break;
-				case "\f":   result += "\\f";  break;
-				case "\r":   result += "\\r";  break;
-				case "\v":   result += "\\v";  break;
-				case "\\":   result += "\\\\"; break;
-				case "\x07": result += "\\a";  break;
-				case "\x1B": result += "\\e";  break;
+				case "\0":   result += escColour + "\\0"  + prevColour; break;
+				case "\b":   result += escColour + "\\b"  + prevColour; break;
+				case "\t":   result += escColour + "\\t"  + prevColour; break;
+				case "\n":   result += escColour + "\\n"  + prevColour; break;
+				case "\f":   result += escColour + "\\f"  + prevColour; break;
+				case "\r":   result += escColour + "\\r"  + prevColour; break;
+				case "\v":   result += escColour + "\\v"  + prevColour; break;
+				case "\\":   result += escColour + "\\\\" + prevColour; break;
+				case "\x07": result += escColour + "\\a"  + prevColour; break;
+				case "\x1B": result += escColour + "\\e"  + prevColour; break;
 				default:     result += (ord = chr.charCodeAt(0)) < 256 && !(96 & ord)
-					? "\\x" + ord.toString(16).padStart(2, "0").toUpperCase()
+					? escColour + "\\x" + ord.toString(16).padStart(2, "0").toUpperCase() + prevColour
 					: chr;
 			}
 		return result;
@@ -56,20 +56,88 @@ export default function print(value, ...args){
 			if(!opts.noAmp){
 				const name = String(input).slice(14, -1);
 				if(input === Symbol[name])
-					return "@@" + esc(name);
+					return symbolFade + "@@" + symbol + esc(name, symbol) + off;
 			}
-			input = esc(String(input));
-			return input.startsWith("Symbol(") && input.endsWith(")")
-				? input
-				: `Symbol(${input})`;
+			input = esc(input, symbol);
+			input = input.startsWith("Symbol(") && input.endsWith(")") ? input.slice(7, -1) : input;
+			return `${symbol}Symbol${symbolFade}(${symbol + input + symbolFade})${off}`;
 		}
-		return esc(String(input));
+		return keys + esc(input, keys, keyEscape) + off;
 	};
+	
+	// Resolve decorator characters
+	let {
+		arrowFat   = "=>",
+		arrowThin  = "->",
+		braceLeft  = "[",
+		braceRight = "]",
+		border     = "│",
+		quote      = '"',
+		quoteLeft  = quote,
+		quoteRight = quote,
+		times      = "×",
+	} = opts.chars || {};
+	
+	// Resolve colour table
+	let {colours} = opts, colourMode = 1;
+	switch(colours){
+		case true:
+		case 256:
+			colourMode = 2;
+			// Fall-through
+		case 8:
+			colours = {};
+			break;
+		default:
+			colourMode = colours && "object" === typeof colours ? 2 : 0;
+	}
+	colours = {__proto__: null, ...colours};
+	for(const key in colours)
+		if("number" === typeof colours[key])
+			colours[key] = "\x1B[38;5;" + colours[key] + "m";
+	const {
+		off        = ["", "\x1B[0m",  "\x1B[0m"]       [colourMode],
+		red        = ["", "\x1B[31m", "\x1B[38;5;9m"]  [colourMode],
+		grey       = ["", "\x1B[37m", "\x1B[38;5;8m"]  [colourMode],
+		green      = ["", "\x1B[32m", "\x1B[38;5;10m"] [colourMode],
+		darkGreen  = ["", green,      "\x1B[38;5;22m"] [colourMode],
+		punct      = ["", grey,       "\x1B[38;5;237m"][colourMode],
+		keys       = ["", "\x1B[39m", "\x1B[39m"]      [colourMode],
+		keyEscape  = ["", red,        "\x1B[38;5;124m"][colourMode],
+		typeColour = ["", "\x1B[1m",  "\x1B[1m"]       [colourMode],
+		primitive  = ["", "\x1B[35m", "\x1B[35m"]      [colourMode],
+		escape     = ["", "\x1B[32m", "\x1B[38;5;28m"] [colourMode],
+		date       = ["", "\x1B[33m", "\x1B[38;5;130m"][colourMode],
+		hexBorder  = ["", red,        "\x1B[38;5;88m"] [colourMode],
+		hexValue   = red,
+		hexOffset  = red,
+		reference  = red,
+		srcBorder  = darkGreen,
+		srcRowNum  = green,
+		srcRowText = darkGreen,
+		nul        = grey,
+		nulProt    = grey,
+		undef      = grey,
+		regex      = green,
+		string     = green,
+		symbol     = green,
+		symbolFade = darkGreen,
+		braces     = punct,
+		quotes     = darkGreen,
+		empty      = `${grey}empty ${times} `,
+		dot        = punct + ".",
+	} = colours;
+	braceLeft  = braces    + braceLeft  + off;
+	braceRight = braces    + braceRight + off;
+	quoteLeft  = quotes    + quoteLeft  + string;
+	quoteRight = quotes    + quoteRight + off;
+	arrowFat   = punct     + arrowFat   + off + " ";
+	arrowThin  = reference + arrowThin  + off + " ";
 	
 	// Resolve identifiers
 	key  = null != key ? formatKey(key) : "";
-	path = path ? (key ? path + "." + key : path) : key || "{root}";
-	key += key  ? ": " : "";
+	path = path ? (key ? path + dot + keys + key : path) : key || "{root}";
+	key += key  ? punct + ":" + off + " " : "";
 	
 	// Special primitives that need no introduction
 	switch(value){
@@ -77,9 +145,11 @@ export default function print(value, ...args){
 		case false:
 		case Infinity:
 		case -Infinity:
+			return key + primitive + value + off;
 		case null:
+			return key + nul + value + off;
 		case undefined:
-			return key + value;
+			return key + undef + value + off;
 	}
 	
 	// Primitive values
@@ -96,15 +166,15 @@ export default function print(value, ...args){
 					if(numKey !== numKey.toUpperCase())
 						continue;
 					if(type === typeof global[numKey] && value === global[numKey])
-						return `${key}${name}.${numKey}`;
+						return key + primitive + name + "." + primitive + numKey + off;
 				}
 			}
 			value = Object.is(value, -0) ? "-0" : String(value);
 			if("bigint" === type && !value.endsWith("n")) value += "n";
-			return key + value;
+			return key + primitive + value + off;
 		
 		case "string":
-			return key + `"${esc(value)}"`;
+			return key + quoteLeft + esc(value, string) + quoteRight;
 		
 		// Dummy entries needed to keep `default` case from matching objects
 		case "object":
@@ -114,7 +184,7 @@ export default function print(value, ...args){
 	// Handle circular references
 	if(refs.has(value))
 		return key + refs.get(value);
-	refs.set(value, "-> " + path);
+	refs.set(value, arrowThin + keys + path);
 	
 	const linesBefore   = [];
 	const linesAfter    = [];
@@ -126,7 +196,7 @@ export default function print(value, ...args){
 	// Handle null-prototypes
 	type = Object.getPrototypeOf(value);
 	if(!type)
-		linesBefore.push("Null prototype");
+		linesBefore.push(nulProt + "Null prototype" + off);
 	
 	// Resolve type annotation
 	else switch(type.constructor){
@@ -144,21 +214,21 @@ export default function print(value, ...args){
 	// Dates
 	if(value instanceof Date){
 		const str = Date.prototype.toString.call(value);
-		linesBefore.push("Invalid Date" === str ? str : Date.prototype.toISOString.call(value));
+		linesBefore.push(date + ("Invalid Date" === str ? str : Date.prototype.toISOString.call(value)) + off);
 	}
 	
 	// Regular expressions
 	else if(value instanceof RegExp)
-		linesBefore.push(RegExp.prototype.toString.call(value));
+		linesBefore.push(regex + RegExp.prototype.toString.call(value) + off);
 	
 	// Maps
 	else if(value instanceof Map){
 		let index = 0;
 		for(let [k, v] of value){
-			k = recurse(k, null, `${path}[${index}.key]`);
-			v = recurse(v, null, `${path}[${index}.value]`);
-			k = `${index}.key ${  k.startsWith("-> ") ? "" : "=> "}${k}`;
-			v = `${index}.value ${v.startsWith("-> ") ? "" : "=> "}${v}`;
+			k = recurse(k, null, path + braceLeft + keys + index + dot + keys + "key"   + braceRight);
+			v = recurse(v, null, path + braceLeft + keys + index + dot + keys + "value" + braceRight);
+			k = keys + index + dot + keys + "key "   + (k.startsWith(arrowThin) ? "" : arrowFat) + k;
+			v = keys + index + dot + keys + "value " + (v.startsWith(arrowThin) ? "" : arrowFat) + v;
 			linesBefore.push(k, v, "");
 			++index;
 		}
@@ -170,8 +240,8 @@ export default function print(value, ...args){
 	else if(value instanceof Set){
 		let index = 0;
 		for(let v of value){
-			v = recurse(v, null, `${path}[${index}]`);
-			linesBefore.push(index++ + (v.startsWith("-> ") ? " " : " => ") + v);
+			v = recurse(v, null, path + braceLeft + keys + index + braceRight);
+			linesBefore.push(index++ + " " + (v.startsWith(arrowThin) ? "" : arrowFat) + v);
 		}
 	}
 	
@@ -192,9 +262,9 @@ export default function print(value, ...args){
 		// Byte-arrays: format entries in hexadecimal, and arrange in od(1)-like columns
 		if(!opts.noHex && entries instanceof Uint8Array)
 			for(let i = 0; i < length; i += 16){
-				const offset = "│0x" + i.toString(16).padStart(8, "0").toUpperCase() + "│";
+				const offset = hexBorder + border + hexOffset + "0x" + i.toString(16).padStart(8, "0").toUpperCase() + hexBorder + border + off;
 				const row = [...entries.subarray(i, i + 16)].map(x => x.toString(16).padStart(2, "0").toUpperCase()).join(" ");
-				linesBefore.push(offset + " " + row);
+				linesBefore.push(offset + hexValue + " " + row);
 			}
 		
 		// Otherwise, list contents vertically
@@ -202,12 +272,15 @@ export default function print(value, ...args){
 			let lastIndex = -1;
 			[].forEach.call(entries, (x, i) => {
 				if(lastIndex < i - 1)
-					linesBefore.push(`empty × ${i - lastIndex - 1}`);
-				linesBefore.push(recurse(x, opts.indexes && !isArrayBuffer ? i : null, `${path}[${i}]`));
+					linesBefore.push(empty + `${i - lastIndex - 1}` + off);
+				linesBefore.push(recurse(x,
+					opts.indexes && !isArrayBuffer ? i : null,
+					path + braceLeft + keys + i + braceRight + off,
+				));
 				lastIndex = i;
 			});
 			if(lastIndex < length - 1)
-				linesBefore.push(`empty × ${length - lastIndex - 1}`);
+				linesBefore.push(empty + `${length - lastIndex - 1}`);
 		}
 	}
 	
@@ -229,10 +302,11 @@ export default function print(value, ...args){
 			++i >= length && str && lines.push(str);
 		}
 		const pad = lines.length.toString().length;
-		linesAfter.push(...lines.map((line, index) => {
-			const ruler = "│" + (index + 1).toString().padStart(pad, " ") + "│ ";
-			return ruler + line;
-		}));
+		linesAfter.push(...lines.map((line, index) =>
+			srcBorder  + border +
+			srcRowNum  + (index + 1).toString().padStart(pad, " ") +
+			srcBorder  + border +
+			srcRowText + " " + line + off));
 	}
 	
 	// Handle property sorting
@@ -267,8 +341,8 @@ export default function print(value, ...args){
 	
 	// Pick an appropriate pair of brackets
 	value = isArrayLike
-		? ["[", "\n", "]"]
-		: ["{", "\n", "}"];
+		? [punct + "[" + off, "\n", punct + "]" + off]
+		: [punct + "{" + off, "\n", punct + "}" + off];
 	
 	// If there's nothing of interest in a RegExp or Date object, use a 1-line form
 	const numProps = propLines.length;
@@ -292,5 +366,5 @@ export default function print(value, ...args){
 		else value[1] = "";
 	}
 	
-	return key + (type ? type + " " : "") + value.join("");
+	return key + (type ? typeColour + type + off + " " : "") + value.join("");
 }

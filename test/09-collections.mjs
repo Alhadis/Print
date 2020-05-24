@@ -373,6 +373,31 @@ describe("Collections", () => {
 			}`);
 		});
 		
+		it("disambiguates entries and numeric properties", () => {
+			const a   = {b: "c"};
+			const set = new Set([a]);
+			set.foo   = {bar: "Baz"};
+			set.add(set.foo);
+			set[1]    = {nah: "Nope"};
+			set.bar   = set[1];
+			expect({set}).to.print(`input: {
+				set: Set {
+					0 => {
+						b: "c"
+					}
+					1 => {
+						bar: "Baz"
+					}
+					
+					1: {
+						nah: "Nope"
+					}
+					foo: -> input.set[1]
+					bar: -> input.set.1
+				}
+			}`, "input");
+		});
+		
 		it("prints empty sets on one line", () => {
 			const set = new Set();
 			expect(set).to.print("Set {}");
