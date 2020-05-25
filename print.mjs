@@ -198,7 +198,6 @@ export default function print(value, ...args){
 	const linesBefore   = [];
 	const linesAfter    = [];
 	const propLines     = [];
-	const recurse       = (v, k, p, f) => print(v, k, opts, refs, p || path, f);
 	const isArrayBuffer = value instanceof ArrayBuffer || "function" === typeof SharedArrayBuffer && value instanceof SharedArrayBuffer;
 	let isArrayLike     = false;
 	let props           = Object.getOwnPropertyNames(value);
@@ -243,11 +242,12 @@ export default function print(value, ...args){
 	
 	// Maps
 	else if(value instanceof Map){
-		let index = 0;
+		let index = 0, p;
 		try{
 			for(let [k, v] of value){
-				k = recurse(k, null, path + braceLeft + keys + index + dot + keys + "key"   + braceRight);
-				v = recurse(v, null, path + braceLeft + keys + index + dot + keys + "value" + braceRight);
+				p = path + braceLeft + keys + index + dot + keys;
+				k = print(k, null, opts, refs, p + "key"   + braceRight);
+				v = print(v, null, opts, refs, p + "value" + braceRight);
 				k = keys + index + dot + keys + "key "   + (k.startsWith(arrowThin) ? "" : arrowFat) + k;
 				v = keys + index + dot + keys + "value " + (v.startsWith(arrowThin) ? "" : arrowFat) + v;
 				linesBefore.push(k, v, "");
@@ -256,7 +256,7 @@ export default function print(value, ...args){
 			// Remove trailing blank line
 			linesBefore.pop();
 		}
-		catch(e){ linesBefore.push(recurse(e, null)); }
+		catch(e){ linesBefore.push(print(e, null, opts, refs, path)); }
 	}
 	
 	// Sets
@@ -264,17 +264,17 @@ export default function print(value, ...args){
 		let index = 0;
 		try{
 			for(let v of value){
-				v = recurse(v, null, path + braceLeft + keys + index + braceRight);
+				v = print(v, null, opts, refs, path + braceLeft + keys + index + braceRight);
 				linesBefore.push(index++ + " " + (v.startsWith(arrowThin) ? "" : arrowFat) + v);
 			}
 		}
-		catch(e){ linesBefore.push(recurse(e, null)); }
+		catch(e){ linesBefore.push(print(e, null, opts, refs, path)); }
 	}
 	
 	// Boxed primitives
-	else if(value instanceof Boolean) linesBefore.push(recurse(true.valueOf.call(value)));
-	else if(value instanceof Number)  linesBefore.push(recurse(1.  .valueOf.call(value)));
-	else if(value instanceof String)  linesBefore.push(recurse(""  .valueOf.call(value))), isArrayLike = false;
+	else if(value instanceof Boolean) linesBefore.push(print(true.valueOf.call(value), null, opts, refs, path));
+	else if(value instanceof Number)  linesBefore.push(print(1.  .valueOf.call(value), null, opts, refs, path));
+	else if(value instanceof String)  linesBefore.push(print(""  .valueOf.call(value), null, opts, refs, path)), isArrayLike = false;
 	
 	// Something that quacks like an array
 	else if(isArrayLike || isArrayBuffer){
@@ -299,8 +299,9 @@ export default function print(value, ...args){
 			[].forEach.call(entries, (x, i) => {
 				if(lastIndex < i - 1)
 					linesBefore.push(empty + `${i - lastIndex - 1}` + off);
-				linesBefore.push(recurse(x,
+				linesBefore.push(print(x,
 					opts.indexes && !isArrayBuffer ? i : null,
+					opts, refs,
 					path + braceLeft + keys + i + braceRight + off,
 				));
 				lastIndex = i;
@@ -348,7 +349,7 @@ export default function print(value, ...args){
 		let proto;
 		try{ proto = value.__proto__; }
 		catch(e){ proto = e; opts = {...opts, proto: false}; }
-		propLines.push(recurse(proto, "__proto__", 0, flags));
+		propLines.push(print(proto, "__proto__", opts, refs, path, flags));
 	}
 	
 	// Inspect each property we're interested in displaying
@@ -365,15 +366,15 @@ export default function print(value, ...args){
 				let result;
 				try{ result = value[prop]; }
 				catch(e){ result = e; }
-				propLines.push(recurse(result, prop, 0, flags));
+				propLines.push(print(result, prop, opts, refs, path, flags));
 			}
 			else{
 				prop = formatKey(prop);
-				if(desc.get) propLines.push(recurse(desc.get, `get ${prop}`, 0, flags | 1));
-				if(desc.set) propLines.push(recurse(desc.set, `set ${prop}`, 0, flags | 1));
+				if(desc.get) propLines.push(print(desc.get, `get ${prop}`, opts, refs, path, flags | 1));
+				if(desc.set) propLines.push(print(desc.set, `set ${prop}`, opts, refs, path, flags | 1));
 			}
 		}
-		else propLines.push(recurse(desc.value, prop, 0, flags));
+		else propLines.push(print(desc.value, prop, opts, refs, path, flags));
 	}
 	
 	// Pick an appropriate pair of brackets
