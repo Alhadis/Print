@@ -116,19 +116,19 @@ describe("Property fields", () => {
 			const bar = {name: "Bar"};
 			bar.__proto__ = foo;
 			expect({foo, bar}).to.print(`{
+				__proto__: {
+					Null prototype
+					
+					__proto__: null
+				}
 				foo: {
+					__proto__: -> {root}.__proto__
 					name: "Foo"
-					__proto__: {
-						Null prototype
-						
-						__proto__: null
-					}
 				}
 				bar: {
-					name: "Bar"
 					__proto__: -> {root}.foo
+					name: "Bar"
 				}
-				__proto__: -> {root}.foo.__proto__
 			}`, {proto: true});
 		});
 		
@@ -142,16 +142,16 @@ describe("Property fields", () => {
 				},
 			});
 			expect({foo}).to.print(`{
-				foo: {
-					name: "Foo"
-					__proto__: Error {
-						no: "Really"
-					}
-				}
 				__proto__: {
 					Null prototype
 					
 					__proto__: null
+				}
+				foo: {
+					__proto__: Error {
+						no: "Really"
+					}
+					name: "Foo"
 				}
 			}`, {proto: true});
 		});

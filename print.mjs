@@ -197,6 +197,7 @@ export default function print(value, ...args){
 	
 	const linesBefore   = [];
 	const linesAfter    = [];
+	const propLines     = [];
 	const recurse       = (v, k, p, f) => print(v, k, opts, refs, p || path, f);
 	const isArrayBuffer = value instanceof ArrayBuffer || "function" === typeof SharedArrayBuffer && value instanceof SharedArrayBuffer;
 	let isArrayLike     = false;
@@ -342,8 +343,15 @@ export default function print(value, ...args){
 	// Identify Number/Math globals so we know when not to identify “magic” numbers
 	flags = (Math === value) << 2 | (Number === value) << 1;
 	
+	// Show the `__proto__` object if possible (and requested)
+	if(opts.proto){
+		let proto;
+		try{ proto = value.__proto__; }
+		catch(e){ proto = e; opts = {...opts, proto: false}; }
+		propLines.push(recurse(proto, "__proto__", 0, flags));
+	}
+	
 	// Inspect each property we're interested in displaying
-	const propLines = [];
 	for(let prop of props){
 		const desc = Object.getOwnPropertyDescriptor(value, prop);
 		
@@ -366,14 +374,6 @@ export default function print(value, ...args){
 			}
 		}
 		else propLines.push(recurse(desc.value, prop, 0, flags));
-	}
-	
-	// Show the `__proto__` object if possible (and requested)
-	if(opts.proto){
-		let proto;
-		try{ proto = value.__proto__; }
-		catch(e){ proto = e; opts = {...opts, proto: false}; }
-		propLines.push(recurse(proto, "__proto__", 0, flags));
 	}
 	
 	// Pick an appropriate pair of brackets
