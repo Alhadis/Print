@@ -305,15 +305,26 @@ describe("Lists", () => {
 		
 		// NB: This technically isn't a typed array, but we format it like one.
 		describe("ArrayBuffers", () => {
+			const haveShared = "function" === typeof SharedArrayBuffer;
+			const share = array => {
+				const buffer = new SharedArrayBuffer(array.length);
+				const view = new DataView(buffer);
+				array.forEach((byte, i) => view.setUint8(i, byte));
+				return buffer;
+			};
+			
 			it("prints the buffer's contents in hexadecimal", () => {
 				expect(Uint8Array.from(range).buffer).to.print(`ArrayBuffer {${table.slice(1, -1)}}`);
 				expect(Uint8Array.from(bytes).buffer).to.print(`ArrayBuffer {
 					│0x00000000│ C3 84 00 CB 87 21 0A
 				}`);
+				haveShared && expect(share(bytes)).to.print(`SharedArrayBuffer {
+					│0x00000000│ C3 84 00 CB 87 21 0A
+				}`);
 			});
 			
 			it("doesn't print hexadecimal if `noHex` is enabled", () => {
-				expect(Uint8Array.from(bytes).buffer).to.print(`ArrayBuffer {
+				const output = `ArrayBuffer {
 					195
 					132
 					0
@@ -321,7 +332,9 @@ describe("Lists", () => {
 					135
 					33
 					10
-				}`, {noHex: true});
+				}`;
+				expect(Uint8Array.from(bytes).buffer).to.print(output, {noHex: true});
+				haveShared && expect(share(bytes)).to.print("Shared" + output, {noHex: true});
 			});
 			
 			it("prints assigned properties", () => {

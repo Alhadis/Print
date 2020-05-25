@@ -190,7 +190,7 @@ export default function print(value, ...args){
 	const linesBefore   = [];
 	const linesAfter    = [];
 	const recurse       = (v, k, p, r) => print(v, k, opts, refs, p || path, r);
-	const isArrayBuffer = value instanceof ArrayBuffer;
+	const isArrayBuffer = value instanceof ArrayBuffer || "function" === typeof SharedArrayBuffer && value instanceof SharedArrayBuffer;
 	let isArrayLike     = false;
 	let props           = Object.getOwnPropertyNames(value);
 	
