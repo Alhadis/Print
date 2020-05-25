@@ -12,6 +12,7 @@
  * @param  {Boolean} [opts.noAmp]         - Don't identify well-known symbols as `@@…`
  * @param  {Boolean} [opts.noHex]         - Don't format byte-arrays as hexadecimal
  * @param  {Boolean} [opts.noSource]      - Don't display function source code
+ * @param  {Boolean} [opts.proto]         - Show `__proto__` properties if possible
  * @param  {Boolean} [opts.sortProps]     - Sort properties alphabetically
  * @param  {WeakMap} [refs=new WeakMap()] - Tracked object references (internal-use only)
  * @param  {String}  [path=""]            - Accessor string used to identify a reference
@@ -216,6 +217,8 @@ export default function print(value, ...args){
 				break;
 			}
 			// Fall-through
+		case null:
+		case undefined:
 		case Array:  type = ""; break;
 		default:     type = esc(type.constructor.name);
 	}
@@ -350,6 +353,14 @@ export default function print(value, ...args){
 			}
 		}
 		else propLines.push(recurse(desc.value, prop, 0, flags));
+	}
+	
+	// Show the `__proto__` object if possible (and requested)
+	if(opts.proto){
+		let proto;
+		try{ proto = value.__proto__; }
+		catch(e){ proto = e; opts = {...opts, proto: false}; }
+		propLines.push(recurse(proto, "__proto__", 0, flags));
 	}
 	
 	// Pick an appropriate pair of brackets
