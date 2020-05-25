@@ -83,6 +83,41 @@ describe("Functions", () => {
 		}`, {all: true});
 	});
 	
+	it("doesn't print source code if `noSource` is set", () => {
+		function foo(i){ return i + 1; }
+		function *bar(){ yield true; }
+		async function baz(i){ return i + 2; }
+		async function *qux(){ yield true; }
+		const opts = {noSource: true};
+		expect(foo).to.print("Function {}", opts);
+		expect(bar).to.print("GeneratorFunction {}", opts);
+		expect(baz).to.print("AsyncFunction {}", opts);
+		expect(qux).to.print("AsyncGeneratorFunction {}", opts);
+		
+		opts.all = true;
+		expect(foo).to.print(`Function {
+			length: 1
+			name: "foo"
+			prototype: {
+				constructor: -> {root}
+			}
+		}`, opts);
+		expect(bar).to.print(`GeneratorFunction {
+			length: 0
+			name: "bar"
+			prototype: {}
+		}`, opts);
+		expect(baz).to.print(`AsyncFunction {
+			length: 1
+			name: "baz"
+		}`, opts);
+		expect(qux).to.print(`AsyncGeneratorFunction {
+			length: 0
+			name: "qux"
+			prototype: {}
+		}`, opts);
+	});
+	
 	describe("Accessors", () => {
 		it("prints getter/setter pairs", () => {
 			let calls = 0;

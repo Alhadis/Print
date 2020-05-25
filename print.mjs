@@ -11,6 +11,7 @@
  * @param  {Boolean} [opts.indexes]       - Display the indexes of iterable entries
  * @param  {Boolean} [opts.noAmp]         - Don't identify well-known symbols as `@@…`
  * @param  {Boolean} [opts.noHex]         - Don't format byte-arrays as hexadecimal
+ * @param  {Boolean} [opts.noSource]      - Don't display function source code
  * @param  {Boolean} [opts.sortProps]     - Sort properties alphabetically
  * @param  {WeakMap} [refs=new WeakMap()] - Tracked object references (internal-use only)
  * @param  {String}  [path=""]            - Accessor string used to identify a reference
@@ -292,8 +293,8 @@ export default function print(value, ...args){
 		}
 	}
 	
-	// Display the source-code of objects that quack like functions
-	if("function" === typeof value){
+	// Display the source code of function objects
+	if("function" === typeof value && !opts.noSource){
 		const source   = [...Function.prototype.toString.call(value)];
 		const lines    = [];
 		const {length} = source;
