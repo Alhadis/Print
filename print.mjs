@@ -121,6 +121,9 @@ export default function print(value, ...args){
 		nul        = grey,
 		nulProt    = grey,
 		undef      = grey,
+		noExts     = grey,
+		frozen     = noExts,
+		sealed     = noExts,
 		regex      = green,
 		string     = green,
 		symbol     = green,
@@ -222,6 +225,10 @@ export default function print(value, ...args){
 		case Array:  type = ""; break;
 		default:     type = esc(type.constructor.name);
 	}
+	
+	if(Object.isFrozen(value))           linesBefore.push(frozen + "Frozen" + off);
+	else if(Object.isSealed(value))      linesBefore.push(sealed + "Sealed" + off);
+	else if(!Object.isExtensible(value)) linesBefore.push(noExts + "Non-extensible" + off);
 	
 	// Dates
 	if(value instanceof Date){

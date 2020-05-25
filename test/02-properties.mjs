@@ -54,6 +54,35 @@ describe("Property fields", () => {
 		}`);
 	});
 	
+	describe("Extensibility", () => {
+		it("identifies non-extensible objects", () => {
+			expect(Object.preventExtensions({foo: 1})).to.print(`{
+				Non-extensible
+				
+				foo: 1
+			}`);
+		});
+		
+		it("identifies sealed objects", () => {
+			expect(Object.seal({foo: 1})).to.print(`{
+				Sealed
+				
+				foo: 1
+			}`);
+		});
+		
+		it("identifies frozen objects", () => {
+			expect(Object.freeze({})).to.print(`{
+				Frozen
+			}`);
+			expect(Object.freeze({foo: 1})).to.print(`{
+				Frozen
+				
+				foo: 1
+			}`);
+		});
+	});
+	
 	describe("Prototypes", () => {
 		it("identifies null prototypes", () => {
 			const obj = {__proto__: null};
@@ -69,6 +98,13 @@ describe("Property fields", () => {
 			obj.bar = "Bar";
 			expect(obj).to.print(`{
 				Null prototype
+				
+				foo: "Foo"
+				bar: "Bar"
+			}`);
+			expect(Object.freeze(obj)).to.print(`{
+				Null prototype
+				Frozen
 				
 				foo: "Foo"
 				bar: "Bar"
