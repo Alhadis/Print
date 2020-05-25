@@ -74,6 +74,45 @@ describe("Property fields", () => {
 		}`);
 	});
 	
+	it("identifies “magic” numbers", () => {
+		expect({
+			euler: Math.E,
+			pi: Math.PI,
+			range: {
+				min: Number.MIN_VALUE,
+				max: Number.MAX_VALUE,
+			},
+		}).to.print(`{
+			euler: Math.E
+			pi: Math.PI
+			range: {
+				min: Number.MIN_VALUE
+				max: Number.MAX_VALUE
+			}
+		}`);
+	});
+	
+	it("doesn't identify them when printing their owners", () => {
+		let lines = print(Math, {all: true}).split("\n");
+		expect(lines.some(line => "PI: " + Math.PI === line.trim())).to.be.true;
+		expect(lines.some(line => "PI: Math.PI"    === line.trim())).to.be.false;
+		
+		lines = print(Number, {all: true}).split("\n");
+		expect(lines.some(line => "MAX_VALUE: " + Number.MAX_VALUE === line.trim())).to.be.true;
+		expect(lines.some(line => "MAX_VALUE: Number.MAX_VALUE"    === line.trim())).to.be.false;
+		
+		const name = "REFERENCE_TO_MAGICAL_NUMBER_THING";
+		Math[name] = Number.MAX_VALUE;
+		lines = print(Math, {all: true}).split("\n");
+		expect(lines.some(line => line.trim() === name + ": Number.MAX_VALUE")).to.be.true;
+		
+		delete Math[name];
+		Number[name] = Math.PI;
+		lines = print(Number, {all: true}).split("\n");
+		expect(lines.some(line => line.trim() === name + ": Math.PI")).to.be.true;
+		delete Number[name];
+	});
+	
 	describe("Ordering", () => {
 		const Γ = Symbol("gamma");
 		const Ζ = Symbol("zeta");

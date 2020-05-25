@@ -14,7 +14,7 @@
  * @param  {Boolean} [opts.sortProps]     - Sort properties alphabetically
  * @param  {WeakMap} [refs=new WeakMap()] - Tracked object references (internal-use only)
  * @param  {String}  [path=""]            - Accessor string used to identify a reference
- * @param  {Boolean} [rawKey=false]       - Don't escape control characters in key string
+ * @param  {Number}  [flags=0]            - Bitmask of flags used internally
  * @return {String}
  */
 export default function print(value, ...args){
@@ -23,7 +23,7 @@ export default function print(value, ...args){
 	if(1 === args.length && args[0] && "object" === typeof args[0])
 		args.unshift(null);
 	
-	let [key, opts = {}, refs = new WeakMap(), path = "", rawKey] = args;
+	let [key, opts = {}, refs = new WeakMap(), path = "", flags = 0] = args;
 	let type = typeof value;
 	
 	// Escape control characters in string output
@@ -136,7 +136,7 @@ export default function print(value, ...args){
 	arrowThin  = reference + arrowThin  + off + " ";
 	
 	// Resolve identifiers
-	key  = null != key ? rawKey ? key : formatKey(key) : "";
+	key  = null != key ? flags & 1 ? key : formatKey(key) : "";
 	path = path ? (key ? path + dot + keys + key : path) : key || "{root}";
 	key += key  ? punct + ":" + off + " " : "";
 	
@@ -162,7 +162,10 @@ export default function print(value, ...args){
 		case "number":
 			// Identify special numbers and mathematical constants by name
 			for(const global of [Math, Number]){
-				const name = global === Math ? "Math" : "Number";
+				const [name, skip] = global === Math
+					? ["Math",   flags & 4]
+					: ["Number", flags & 2];
+				if(skip) continue;
 				for(const numKey of Object.getOwnPropertyNames(global)){
 					if(numKey !== numKey.toUpperCase())
 						continue;
@@ -189,7 +192,7 @@ export default function print(value, ...args){
 	
 	const linesBefore   = [];
 	const linesAfter    = [];
-	const recurse       = (v, k, p, r) => print(v, k, opts, refs, p || path, r);
+	const recurse       = (v, k, p, f) => print(v, k, opts, refs, p || path, f);
 	const isArrayBuffer = value instanceof ArrayBuffer || "function" === typeof SharedArrayBuffer && value instanceof SharedArrayBuffer;
 	let isArrayLike     = false;
 	let props           = Object.getOwnPropertyNames(value);
@@ -319,6 +322,9 @@ export default function print(value, ...args){
 	opts.sortProps && props.sort((a, b) =>
 		String(a).toLowerCase().localeCompare(String(b).toLowerCase()));
 	
+	// Identify Number/Math globals so we know when not to identify “magic” numbers
+	flags = (Math === value) << 2 | (Number === value) << 1;
+	
 	// Inspect each property we're interested in displaying
 	const propLines = [];
 	for(let prop of props){
@@ -334,15 +340,15 @@ export default function print(value, ...args){
 				let result;
 				try{ result = value[prop]; }
 				catch(e){ result = e; }
-				propLines.push(recurse(result, prop));
+				propLines.push(recurse(result, prop, 0, flags));
 			}
 			else{
 				prop = formatKey(prop);
-				if(desc.get) propLines.push(recurse(desc.get, `get ${prop}`, 0, true));
-				if(desc.set) propLines.push(recurse(desc.set, `set ${prop}`, 0, true));
+				if(desc.get) propLines.push(recurse(desc.get, `get ${prop}`, 0, flags | 1));
+				if(desc.set) propLines.push(recurse(desc.set, `set ${prop}`, 0, flags | 1));
 			}
 		}
-		else propLines.push(recurse(desc.value, prop));
+		else propLines.push(recurse(desc.value, prop, 0, flags));
 	}
 	
 	// Pick an appropriate pair of brackets
