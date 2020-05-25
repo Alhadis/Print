@@ -267,6 +267,35 @@ describe("Collections", () => {
 				foo: "Bar"
 			}`);
 		});
+		
+		it("catches errors thrown by faulty iterators", () => {
+			class BadMap extends Map{
+				[Symbol.iterator](){
+					let count = 0;
+					return {
+						next(){
+							if(++count >= 3){
+								const error = new RangeError("You're out");
+								error.strikes = 3;
+								throw error;
+							}
+							return {value: [count, count]};
+						},
+					};
+				}
+			}
+			expect(new BadMap()).to.print(`BadMap {
+				0.key => 1
+				0.value => 1
+				
+				1.key => 2
+				1.value => 2
+				
+				RangeError {
+					strikes: 3
+				}
+			}`);
+		});
 	});
 	
 	describe("Sets", () => {
@@ -404,6 +433,31 @@ describe("Collections", () => {
 			set.foo = "Bar";
 			expect(set).to.print(`Set {
 				foo: "Bar"
+			}`);
+		});
+		
+		it("catches errors thrown by faulty iterators", () => {
+			class BadSet extends Set{
+				[Symbol.iterator](){
+					let count = 0;
+					return {
+						next(){
+							if(++count >= 3){
+								const error = new RangeError("You're out");
+								error.strikes = 3;
+								throw error;
+							}
+							return {value: count};
+						},
+					};
+				}
+			}
+			expect(new BadSet()).to.print(`BadSet {
+				0 => 1
+				1 => 2
+				RangeError {
+					strikes: 3
+				}
 			}`);
 		});
 	});

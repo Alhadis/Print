@@ -236,25 +236,31 @@ export default function print(value, ...args){
 	// Maps
 	else if(value instanceof Map){
 		let index = 0;
-		for(let [k, v] of value){
-			k = recurse(k, null, path + braceLeft + keys + index + dot + keys + "key"   + braceRight);
-			v = recurse(v, null, path + braceLeft + keys + index + dot + keys + "value" + braceRight);
-			k = keys + index + dot + keys + "key "   + (k.startsWith(arrowThin) ? "" : arrowFat) + k;
-			v = keys + index + dot + keys + "value " + (v.startsWith(arrowThin) ? "" : arrowFat) + v;
-			linesBefore.push(k, v, "");
-			++index;
+		try{
+			for(let [k, v] of value){
+				k = recurse(k, null, path + braceLeft + keys + index + dot + keys + "key"   + braceRight);
+				v = recurse(v, null, path + braceLeft + keys + index + dot + keys + "value" + braceRight);
+				k = keys + index + dot + keys + "key "   + (k.startsWith(arrowThin) ? "" : arrowFat) + k;
+				v = keys + index + dot + keys + "value " + (v.startsWith(arrowThin) ? "" : arrowFat) + v;
+				linesBefore.push(k, v, "");
+				++index;
+			}
+			// Remove trailing blank line
+			linesBefore.pop();
 		}
-		// Remove trailing blank line
-		linesBefore.pop();
+		catch(e){ linesBefore.push(recurse(e, null)); }
 	}
 	
 	// Sets
 	else if(value instanceof Set){
 		let index = 0;
-		for(let v of value){
-			v = recurse(v, null, path + braceLeft + keys + index + braceRight);
-			linesBefore.push(index++ + " " + (v.startsWith(arrowThin) ? "" : arrowFat) + v);
+		try{
+			for(let v of value){
+				v = recurse(v, null, path + braceLeft + keys + index + braceRight);
+				linesBefore.push(index++ + " " + (v.startsWith(arrowThin) ? "" : arrowFat) + v);
+			}
 		}
+		catch(e){ linesBefore.push(recurse(e, null)); }
 	}
 	
 	// Boxed primitives
