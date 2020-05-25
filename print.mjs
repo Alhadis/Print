@@ -14,6 +14,7 @@
  * @param  {Boolean} [opts.sortProps]     - Sort properties alphabetically
  * @param  {WeakMap} [refs=new WeakMap()] - Tracked object references (internal-use only)
  * @param  {String}  [path=""]            - Accessor string used to identify a reference
+ * @param  {Boolean} [rawKey=false]       - Don't escape control characters in key string
  * @return {String}
  */
 export default function print(value, ...args){
@@ -22,7 +23,7 @@ export default function print(value, ...args){
 	if(1 === args.length && args[0] && "object" === typeof args[0])
 		args.unshift(null);
 	
-	let [key, opts = {}, refs = new WeakMap(), path = ""] = args;
+	let [key, opts = {}, refs = new WeakMap(), path = "", rawKey] = args;
 	let type = typeof value;
 	
 	// Escape control characters in string output
@@ -124,7 +125,7 @@ export default function print(value, ...args){
 		symbolFade = darkGreen,
 		braces     = punct,
 		quotes     = darkGreen,
-		empty      = `${grey}empty ${times} `,
+		empty      = grey + "empty " + times + " ",
 		dot        = punct + ".",
 	} = colours;
 	braceLeft  = braces    + braceLeft  + off;
@@ -135,7 +136,7 @@ export default function print(value, ...args){
 	arrowThin  = reference + arrowThin  + off + " ";
 	
 	// Resolve identifiers
-	key  = null != key ? formatKey(key) : "";
+	key  = null != key ? rawKey ? key : formatKey(key) : "";
 	path = path ? (key ? path + dot + keys + key : path) : key || "{root}";
 	key += key  ? punct + ":" + off + " " : "";
 	
@@ -188,7 +189,7 @@ export default function print(value, ...args){
 	
 	const linesBefore   = [];
 	const linesAfter    = [];
-	const recurse       = (v, k, p) => print(v, k, opts, refs, p || path);
+	const recurse       = (v, k, p, r) => print(v, k, opts, refs, p || path, r);
 	const isArrayBuffer = value instanceof ArrayBuffer;
 	let isArrayLike     = Symbol.iterator in value && +value.length >= 0;
 	let props           = Object.getOwnPropertyNames(value);
@@ -316,7 +317,7 @@ export default function print(value, ...args){
 	
 	// Inspect each property we're interested in displaying
 	const propLines = [];
-	for(const prop of props){
+	for(let prop of props){
 		const desc = Object.getOwnPropertyDescriptor(value, prop);
 		
 		// Skip non-enumerable properties by default
@@ -332,8 +333,9 @@ export default function print(value, ...args){
 				propLines.push(recurse(result, prop));
 			}
 			else{
-				if(desc.get) propLines.push(recurse(desc.get, `get ${prop}`));
-				if(desc.set) propLines.push(recurse(desc.set, `set ${prop}`));
+				prop = formatKey(prop);
+				if(desc.get) propLines.push(recurse(desc.get, `get ${prop}`, 0, true));
+				if(desc.set) propLines.push(recurse(desc.set, `set ${prop}`, 0, true));
 			}
 		}
 		else propLines.push(recurse(desc.value, prop));

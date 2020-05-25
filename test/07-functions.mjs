@@ -102,6 +102,24 @@ describe("Functions", () => {
 				xyz: "XYZ"
 			}`);
 			expect(calls).to.equal(0);
+			
+			calls = 0;
+			expect({
+				abc: "ABC",
+				get [Symbol.toStringTag](){ ++calls; return "Bar"; },
+				set [Symbol.toStringTag](to){ calls += 1 ** +!!to; },
+				xyz: "XYZ",
+			}).to.print(`{
+				abc: "ABC"
+				xyz: "XYZ"
+				get @@toStringTag: Function {
+					│1│ get [Symbol.toStringTag](){ ++calls; return "Bar"; }
+				}
+				set @@toStringTag: Function {
+					│1│ set [Symbol.toStringTag](to){ calls += 1 ** +!!to; }
+				}
+			}`);
+			expect(calls).to.equal(0);
 		});
 		
 		it("doesn't print them when invoking getters", () => {
