@@ -1,4 +1,5 @@
 import {expect} from "./helpers.mjs";
+import print from "../print.mjs";
 
 describe("Lists", () => {
 	describe("Arrays", () => {
@@ -629,6 +630,11 @@ describe("Lists", () => {
 				expect(uint64).to.print(`BigUint64Array [
 					bar: "Bar"
 				]`, {noHex: true});
+			});
+			
+			it("doesn't break when printing `TypedArray.prototype`", () => {
+				const output = print(Uint8Array.prototype, {all: true});
+				expect(output.split("\n").shift()).to.equal("TypedArray {");
 			});
 		});
 	});

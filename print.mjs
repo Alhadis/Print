@@ -191,8 +191,12 @@ export default function print(value, ...args){
 	const linesAfter    = [];
 	const recurse       = (v, k, p, r) => print(v, k, opts, refs, p || path, r);
 	const isArrayBuffer = value instanceof ArrayBuffer;
-	let isArrayLike     = Symbol.iterator in value && +value.length >= 0;
+	let isArrayLike     = false;
 	let props           = Object.getOwnPropertyNames(value);
+	
+	// Ignore gripes from `TypedArray.prototype.length`
+	try{ isArrayLike = Symbol.iterator in value && +value.length >= 0; }
+	catch(e){}
 	
 	// Handle null-prototypes
 	type = Object.getPrototypeOf(value);
