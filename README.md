@@ -1,200 +1,12 @@
-Print
-=====
+<!--*- truncate-lines: t; indent-tabs-mode: t; -*- vim:set nowrap ts=4 noet: -->
 
+Print
+================================================================================
 [![Build status: TravisCI][TravisCI-badge]][TravisCI-link]
 [![Build status: AppVeyor][AppVeyor-badge]][AppVeyor-link]
 [![Coverage status][Coverage-badge]][Coverage-link]
 [![Latest release][NPM-badge]][NPM-link]
 
-Generate a human-readable representation of a value. Focussed on producing clean
-and *accurate* depictions of data. Suitable for debugging and generating diffs.
-
-
-Usage
------
-
-```js
-const print = require("print");
-let output = print({
-    foo: "bar",
-    baz: "quux",
-    list: [1, 2, 3, 4, "five"]
-});
-console.log(output);
-
-print.out(obj); // Shortcut for console.log(print(obj));
-```
-
-
-### Comparison with built-in functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-print                JSON.stringify          util.inspect
-
-{                    {                       { foo: 'bar',
-    baz: "quux"          "foo": "bar",         baz: 'quux',
-    foo: "bar"           "baz": "quux",        list:
-    list: [              "list": [             [ 1,
-        1                    1,                  2,
-        2                    2,                  3,
-        3                    3,                  4,
-        4                    4,                  'five' ] }
-        "five"               "five"
-    ]                    ]
-}                    }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-`print` also handles circular references by showing a `->` pointing to where the
-object was first mentioned. For example, the following code:
-
-```js
-const A = {};
-const B = {foo: A};
-print({A, B});
-```
-
-Will produce:
-~~~
-{
-    A: {}
-    B: {
-        foo: -> A
-    }
-}
-~~~
-
-
-
-Options
--------
-An optional second parameter can be passed to refine `print`'s output.
-
-Available options and their default values are listed below:
-
-```js
-print(input, {
-    ampedSymbols:     true,
-    escapeChars:      /(?!\x20)\s|\\/g,
-    invokeGetters:    false,
-    maxArrayLength:   100,
-    showAll:          false,
-    showArrayIndices: false,
-    showArrayLength:  false,
-    sortProps:        true
-});
-```
-
-
-### ampedSymbols
-[Boolean]  
-Prefix [Symbol]-keyed properties with `@@`. Disable to show `Symbol(…)` instead.
-
-
-
-### escapeChars
-[RegExp] | [Function]  
-What characters, if any, are escaped in string values.
-
-By default, anything that alters the output's meaning or layout is escaped:
-
-    \f \n \r \t \v \\
-
-This can be overridden with a custom expression or callback, the latter of which
-receives the entire string as an argument.
-
-Passing falsey values to `escapeChars` disables escaping altogether, which isn't
-recommended if your input contains line-breaks or tabulation.
-
-
-
-### invokeGetters
-[Boolean]  
-Permit `print` to call a property getter to display its computed value.
-
-Invoking a getter can have unwanted side-effects, so this option is disabled
-by default.
-
-
-
-### maxArrayLength
-[Number]  
-Maximum number of array values to show before truncating them:
-
-~~~
-[
-    1
-    2
-    3
-
-    … 7 more values not shown
-]
-~~~
-
-Note this excludes any named properties stored on the Array object:
-
-```js
-const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-input.foo = "bar";
-print(input, { maxArrayLength: 3 })
-```
-
-~~~
-[
-    1
-    2
-    3
-	
-    … 7 more values not shown
-
-    foo: "bar"
-]
-~~~
-
-
-### showAll
-[Boolean]  
-Include non-enumerable properties when printing an object.
-
-Note that inherited properties are *always* hidden.
-
-
-### showArrayIndices
-[Boolean]  
-Show the index of each element in an array.
-
-~~~
-[                  [
-    "A"                0: "A"
-    "B"      ->        1: "B"
-    "C"                2: "C"
-]                  ]
-~~~
-
-
-### showArrayLength
-[Boolean]  
-Display an array's `length` property after its values:
-
-~~~
-[
-    "A"
-    "B"
-    "C"
-    length: 3
-]
-~~~
-
-
-### sortProps
-[Boolean]  
-Alphabetise the properties of printed objects.
-
-To display properties in the order they were assigned, set this to `false`.
-
-Note that alphabetisation is case-insensitive.
-
-
-
-<!-- Referenced links --------------------------------------------------------->
 [AppVeyor-badge]: https://img.shields.io/appveyor/build/Alhadis/Print
 [AppVeyor-link]:  https://ci.appveyor.com/project/Alhadis/Print
 [TravisCI-badge]: https://travis-ci.org/Alhadis/Print.svg?branch=master
@@ -203,8 +15,96 @@ Note that alphabetisation is case-insensitive.
 [Coverage-link]:  https://coveralls.io/github/Alhadis/Print
 [NPM-badge]:      https://img.shields.io/npm/v/print.svg?colorB=brightgreen
 [NPM-link]:       https://github.com/Alhadis/Print/releases/latest
-[Boolean]:        http://mdn.io/JavaScript/Reference/Global_Objects/Boolean
-[Function]:       http://mdn.io/JavaScript/Reference/Global_Objects/Function
-[Number]:         http://mdn.io/JavaScript/Reference/Global_Objects/Number
-[RegExp]:         http://mdn.io/JavaScript/Reference/Global_Objects/RegExp
-[Symbol]:         http://mdn.io/JavaScript/Reference/Global_Objects/Symbol
+
+
+Generates a diff-friendly, human-readable representation of a JavaScript object.
+Ideal for preparing [`AssertionError`][1] feedback, or for inspecting objects in
+environments where Node's [`util.inspect()`][2] is unavailable.
+
+[1]: https://nodejs.org/api/assert.html#assert_class_assert_assertionerror
+[2]: https://nodejs.org/api/util.html#util_util_inspect_object_options
+
+
+Usage
+--------------------------------------------------------------------------------
+```js
+import print from "./print.mjs";
+
+let result;
+result = print(subject);
+result = print(subject, options);
+result = print(subject, "label");
+result = print(subject, "label", options);
+```
+
+`print()` returns a string containing an unambiguous representation of an object
+or primitive, optionally prefixed with a [`label`][3]. The output format depends
+on the subject's type, the presence or absence of properties, and [`options`][4]
+set by the user.
+
+[3]: #label
+[4]: #options
+
+
+#### `subject`
+- **Type:** Any
+- **Default:** `undefined`
+
+The JavaScript value being printed.
+
+
+#### `label`
+- **Type:**     [`String`][] | [`Symbol`][]  
+- **Default:**  `"{root}"`
+
+The name of a property (or variable) that `subject` is associated with. This can
+improve readability of object references (indicated by `->`), or clarify context
+by prefixing output with a meaningful label.
+
+```js
+const targetObject = {
+	foo: {},
+	bar: {},
+};
+targetObject.bar.referenceToFoo = targetObject.foo;
+print(targetObject, "subject");
+```
+
+The example above returns:
+~~~
+subject: {
+	foo: {}
+	bar: {
+		referenceToFoo: -> subject.foo
+	}
+}
+~~~
+
+
+#### `options`
+- **Type:**    [`Object`][]
+- **Default:** `{}`
+
+Additional settings for refining output. Unless mentioned otherwise, all options
+default to `null` or `false`.
+
+<!-- Options table ------------------------------------------------------------>
+| Name            | Type          | Description                                |
+|:----------------|:--------------|:-------------------------------------------|
+| `all`           | [`Boolean`][] | Display non-enumerable properties          |
+| `followGetters` | [`Boolean`][] | Invoke getter functions                    |
+| `indexes`       | [`Boolean`][] | Display the indexes of iterable entries    |
+| `noAmp`         | [`Boolean`][] | Don't format [well-known symbols] as `@@…` |
+| `noHex`         | [`Boolean`][] | Don't format byte-arrays as hexadecimal    |
+| `noSource`      | [`Boolean`][] | Don't display function source code         |
+| `proto`         | [`Boolean`][] | Show `__proto__` properties if possible    |
+| `sortProps`     | [`Boolean`][] | Sort properties alphabetically             |
+<!----------------------------------------------------------------------------->
+
+
+<!-- Referenced links --------------------------------------------------------->
+[`Boolean`]: https://mdn.io/Boolean
+[`Object`]:  https://mdn.io/Object
+[`String`]:  https://mdn.io/String
+[`Symbol`]:  https://mdn.io/Symbol
+[well-known symbols]: https://mdn.io/Glossary/Symbol#Well-known_symbols
