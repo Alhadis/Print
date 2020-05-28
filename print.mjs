@@ -188,6 +188,7 @@ export default function print(value, ...args){
 		// Dummy entries needed to keep `default` case from matching objects
 		case "object":
 		case "function":
+			break;
 	}
 	
 	// Handle circular references
