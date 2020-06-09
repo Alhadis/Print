@@ -9,6 +9,7 @@
  * @param  {Boolean} [opts.all]           - Display non-enumerable properties
  * @param  {Boolean} [opts.followGetters] - Invoke getter functions
  * @param  {Boolean} [opts.indexes]       - Display the indexes of iterable entries
+ * @param  {Number}  [opts.maxDepth]      - Hide object details after 𝑁 recursions
  * @param  {Boolean} [opts.noAmp]         - Don't identify well-known symbols as `@@…`
  * @param  {Boolean} [opts.noHex]         - Don't format byte-arrays as hexadecimal
  * @param  {Boolean} [opts.noSource]      - Don't display function source code
@@ -16,6 +17,7 @@
  * @param  {Boolean} [opts.sortProps]     - Sort properties alphabetically
  * @param  {WeakMap} [refs=new WeakMap()] - Tracked object references (internal-use only)
  * @param  {String}  [path=""]            - Accessor string used to identify a reference
+ * @param  {Number}  [depth=0]            - Current recursion level
  * @param  {Number}  [flags=0]            - Bitmask of flags used internally
  * @return {String}
  */
@@ -25,8 +27,9 @@ export default function print(value, ...args){
 	if(1 === args.length && args[0] && "object" === typeof args[0])
 		args.unshift(null);
 	
-	let [key, opts = {}, refs = new WeakMap(), path = "", flags = 0] = args;
+	let [key, opts = {}, refs = new WeakMap(), path = "", depth = 0, flags = 0] = args;
 	let type = typeof value;
+	++depth;
 	
 	// Escape control characters in string output
 	const esc = (input, prevColour = off, escColour = escape) => {
@@ -75,6 +78,7 @@ export default function print(value, ...args){
 		braceLeft  = "[",
 		braceRight = "]",
 		border     = "│",
+		ellipsis   = "…",
 		quote      = '"',
 		quoteLeft  = quote,
 		quoteRight = quote,
@@ -137,6 +141,7 @@ export default function print(value, ...args){
 	braceRight = braces    + braceRight + off;
 	quoteLeft  = quotes    + quoteLeft  + string;
 	quoteRight = quotes    + quoteRight + off;
+	ellipsis   = punct     + ellipsis   + off;
 	arrowFat   = punct     + arrowFat   + off + " ";
 	arrowThin  = reference + arrowThin  + off + " ";
 	
@@ -199,9 +204,10 @@ export default function print(value, ...args){
 	const linesBefore   = [];
 	const linesAfter    = [];
 	const propLines     = [];
+	const tooDeep       = depth > opts.maxDepth && isFinite(opts.maxDepth);
 	const isArrayBuffer = value instanceof ArrayBuffer || "function" === typeof SharedArrayBuffer && value instanceof SharedArrayBuffer;
 	let isArrayLike     = false;
-	let props           = Object.getOwnPropertyNames(value);
+	let props           = tooDeep || Object.getOwnPropertyNames(value);
 	
 	// Ignore gripes from `TypedArray.prototype.length`
 	try{ isArrayLike = Symbol.iterator in value && +value.length >= 0; }
@@ -210,7 +216,7 @@ export default function print(value, ...args){
 	// Handle null-prototypes
 	type = Object.getPrototypeOf(value);
 	if(!type)
-		linesBefore.push(nulProt + "Null prototype" + off);
+		tooDeep || linesBefore.push(nulProt + "Null prototype" + off);
 	
 	// Resolve type annotation
 	else switch(type.constructor){
@@ -227,9 +233,11 @@ export default function print(value, ...args){
 		default:     type = esc(type.constructor.name);
 	}
 	
-	if(Object.isFrozen(value))           linesBefore.push(frozen + "Frozen" + off);
-	else if(Object.isSealed(value))      linesBefore.push(sealed + "Sealed" + off);
-	else if(!Object.isExtensible(value)) linesBefore.push(noExts + "Non-extensible" + off);
+	if(!tooDeep){
+		if(Object.isFrozen(value))           linesBefore.push(frozen + "Frozen" + off);
+		else if(Object.isSealed(value))      linesBefore.push(sealed + "Sealed" + off);
+		else if(!Object.isExtensible(value)) linesBefore.push(noExts + "Non-extensible" + off);
+	}
 	
 	// Dates
 	if(value instanceof Date){
@@ -241,14 +249,18 @@ export default function print(value, ...args){
 	else if(value instanceof RegExp)
 		linesBefore.push(regex + RegExp.prototype.toString.call(value) + off);
 	
+	// Something without a single-line representation that's beyond our recursion limit
+	else if(tooDeep)
+		linesBefore.push(ellipsis);
+	
 	// Maps
 	else if(value instanceof Map){
 		let index = 0, p;
 		try{
 			for(let [k, v] of value){
 				p = path + braceLeft + keys + index + dot + keys;
-				k = print(k, null, opts, refs, p + "key"   + braceRight);
-				v = print(v, null, opts, refs, p + "value" + braceRight);
+				k = print(k, null, opts, refs, p + "key"   + braceRight, depth);
+				v = print(v, null, opts, refs, p + "value" + braceRight, depth);
 				k = keys + index + dot + keys + "key "   + (k.startsWith(arrowThin) ? "" : arrowFat) + k;
 				v = keys + index + dot + keys + "value " + (v.startsWith(arrowThin) ? "" : arrowFat) + v;
 				linesBefore.push(k, v, "");
@@ -257,7 +269,7 @@ export default function print(value, ...args){
 			// Remove trailing blank line
 			linesBefore.pop();
 		}
-		catch(e){ linesBefore.push(print(e, null, opts, refs, path)); }
+		catch(e){ linesBefore.push(print(e, null, opts, refs, path, depth)); }
 	}
 	
 	// Sets
@@ -265,17 +277,17 @@ export default function print(value, ...args){
 		let index = 0;
 		try{
 			for(let v of value){
-				v = print(v, null, opts, refs, path + braceLeft + keys + index + braceRight);
+				v = print(v, null, opts, refs, path + braceLeft + keys + index + braceRight, depth);
 				linesBefore.push(index++ + " " + (v.startsWith(arrowThin) ? "" : arrowFat) + v);
 			}
 		}
-		catch(e){ linesBefore.push(print(e, null, opts, refs, path)); }
+		catch(e){ linesBefore.push(print(e, null, opts, refs, path, depth)); }
 	}
 	
 	// Boxed primitives
-	else if(value instanceof Boolean) linesBefore.push(print(true.valueOf.call(value), null, opts, refs, path));
-	else if(value instanceof Number)  linesBefore.push(print(1.  .valueOf.call(value), null, opts, refs, path));
-	else if(value instanceof String)  linesBefore.push(print(""  .valueOf.call(value), null, opts, refs, path)), isArrayLike = false;
+	else if(value instanceof Boolean) linesBefore.push(print(true.valueOf.call(value), null, opts, refs, path, depth));
+	else if(value instanceof Number)  linesBefore.push(print(1.  .valueOf.call(value), null, opts, refs, path, depth));
+	else if(value instanceof String)  linesBefore.push(print(""  .valueOf.call(value), null, opts, refs, path, depth)), isArrayLike = false;
 	
 	// Something that quacks like an array
 	else if(isArrayLike || isArrayBuffer){
@@ -304,6 +316,7 @@ export default function print(value, ...args){
 					opts.indexes && !isArrayBuffer ? i : null,
 					opts, refs,
 					path + braceLeft + keys + i + braceRight + off,
+					depth,
 				));
 				lastIndex = i;
 			});
@@ -313,7 +326,7 @@ export default function print(value, ...args){
 	}
 	
 	// Display the source code of function objects
-	if("function" === typeof value && !opts.noSource){
+	if("function" === typeof value && !opts.noSource && !tooDeep){
 		const source   = [...Function.prototype.toString.call(value)];
 		const lines    = [];
 		const {length} = source;
@@ -337,45 +350,48 @@ export default function print(value, ...args){
 			srcRowText + " " + line + off));
 	}
 	
-	// Handle property sorting
-	props.push(...Object.getOwnPropertySymbols(value));
-	opts.sortProps && props.sort((a, b) =>
-		String(a).toLowerCase().localeCompare(String(b).toLowerCase()));
-	
-	// Identify Number/Math globals so we know when not to identify “magic” numbers
-	flags = (Math === value) << 2 | (Number === value) << 1;
-	
-	// Show the `__proto__` object if possible (and requested)
-	if(opts.proto){
-		let proto;
-		try{ proto = value.__proto__; }
-		catch(e){ proto = e; opts = {...opts, proto: false}; }
-		propLines.push(print(proto, "__proto__", opts, refs, path, flags));
-	}
-	
-	// Inspect each property we're interested in displaying
-	for(let prop of props){
-		const desc = Object.getOwnPropertyDescriptor(value, prop);
+	// Property printing
+	if(!tooDeep){
+		// Handle property sorting
+		props.push(...Object.getOwnPropertySymbols(value));
+		opts.sortProps && props.sort((a, b) =>
+			String(a).toLowerCase().localeCompare(String(b).toLowerCase()));
 		
-		// Skip non-enumerable properties by default
-		if(!desc.enumerable && !opts.all)
-			continue;
+		// Identify Number/Math globals so we know when not to identify “magic” numbers
+		flags = (Math === value) << 2 | (Number === value) << 1;
 		
-		// Getter and/or setter
-		if(desc.get || desc.set){
-			if(desc.get && opts.followGetters){
-				let result;
-				try{ result = value[prop]; }
-				catch(e){ result = e; }
-				propLines.push(print(result, prop, opts, refs, path, flags));
-			}
-			else{
-				prop = formatKey(prop);
-				if(desc.get) propLines.push(print(desc.get, `get ${prop}`, opts, refs, path, flags | 1));
-				if(desc.set) propLines.push(print(desc.set, `set ${prop}`, opts, refs, path, flags | 1));
-			}
+		// Show the `__proto__` object if possible (and requested)
+		if(opts.proto){
+			let proto;
+			try{ proto = value.__proto__; }
+			catch(e){ proto = e; opts = {...opts, proto: false}; }
+			propLines.push(print(proto, "__proto__", opts, refs, path, depth, flags));
 		}
-		else propLines.push(print(desc.value, prop, opts, refs, path, flags));
+	
+		// Inspect each property we're interested in displaying
+		for(let prop of props){
+			const desc = Object.getOwnPropertyDescriptor(value, prop);
+			
+			// Skip non-enumerable properties by default
+			if(!desc.enumerable && !opts.all)
+				continue;
+			
+			// Getter and/or setter
+			if(desc.get || desc.set){
+				if(desc.get && opts.followGetters){
+					let result;
+					try{ result = value[prop]; }
+					catch(e){ result = e; }
+					propLines.push(print(result, prop, opts, refs, path, depth, flags));
+				}
+				else{
+					prop = formatKey(prop);
+					if(desc.get) propLines.push(print(desc.get, `get ${prop}`, opts, refs, path, depth, flags | 1));
+					if(desc.set) propLines.push(print(desc.set, `set ${prop}`, opts, refs, path, depth, flags | 1));
+				}
+			}
+			else propLines.push(print(desc.value, prop, opts, refs, path, depth, flags));
+		}
 	}
 	
 	// Pick an appropriate pair of brackets
@@ -387,6 +403,10 @@ export default function print(value, ...args){
 	const numProps = propLines.length;
 	if(!numProps && ("RegExp" === type || "Date" === type) && 1 === linesBefore.length)
 		value = linesBefore, type = "";
+	
+	// Keep truncated objects on one line
+	else if(tooDeep)
+		value.splice(1, 1, linesBefore[0]);
 	
 	// Otherwise, tally our lists and inject padding where it's needed
 	else{

@@ -94,6 +94,7 @@ default to `null` or `false`.
 | `all`           | [`Boolean`][] | Display non-enumerable properties          |
 | `followGetters` | [`Boolean`][] | Invoke getter functions                    |
 | `indexes`       | [`Boolean`][] | Display the indexes of iterable entries    |
+| `maxDepth`      | [`Number`][]  | Hide object details after _N_ recursions   |
 | `noAmp`         | [`Boolean`][] | Don't format [well-known symbols] as `@@…` |
 | `noHex`         | [`Boolean`][] | Don't format byte-arrays as hexadecimal    |
 | `noSource`      | [`Boolean`][] | Don't display function source code         |
@@ -104,6 +105,7 @@ default to `null` or `false`.
 
 <!-- Referenced links --------------------------------------------------------->
 [`Boolean`]: https://mdn.io/Boolean
+[`Number`]:  https://mdn.io/Number
 [`Object`]:  https://mdn.io/Object
 [`String`]:  https://mdn.io/String
 [`Symbol`]:  https://mdn.io/Symbol

@@ -541,4 +541,162 @@ describe("Property fields", () => {
 			}`, {followGetters: true});
 		});
 	});
+	
+	when("`maxDepth` is exceeded", () => {
+		it("elides property lists", () => {
+			const obj = {foo: {bar: {baz: {qux: {qul: 1}}}}};
+			expect(obj).to.print("{…}", {maxDepth: 0});
+			expect(obj).to.print("{…}", {maxDepth: -1});
+			expect(obj).to.print(`{
+				foo: {…}
+			}`, {maxDepth: 1});
+			expect(obj).to.print(`{
+				foo: {
+					bar: {…}
+				}
+			}`, {maxDepth: 2});
+			expect(obj).to.print(`{
+				foo: {
+					bar: {
+						baz: {…}
+					}
+				}
+			}`, {maxDepth: 3});
+			expect(obj).to.print(`{
+				foo: {
+					bar: {
+						baz: {
+							qux: {…}
+						}
+					}
+				}
+			}`, {maxDepth: 4});
+			const full = `{
+				foo: {
+					bar: {
+						baz: {
+							qux: {
+								qul: 1
+							}
+						}
+					}
+				}
+			}`;
+			expect(obj).to.print(full, {maxDepth: 5});
+			expect(obj).to.print(full, {maxDepth: NaN});
+			expect(obj).to.print(full, {maxDepth: Infinity});
+		});
+		
+		it("elides details about null prototypes", () => {
+			expect({__proto__: null}).to.print("{…}", {maxDepth: 0});
+			expect({__proto__: null}).to.print(`{
+				Null prototype
+			}`, {maxDepth: 1});
+			expect({foo: {__proto__: null}}).to.print(`{
+				foo: {…}
+			}`, {maxDepth: 1});
+			expect({foo: {__proto__: null}}).to.print(`{
+				foo: {
+					Null prototype
+				}
+			}`, {maxDepth: 2});
+		});
+		
+		it("elides details about extensibility", () => {
+			expect(Object.freeze({})).to.print("{…}", {maxDepth: 0});
+			expect(Object.freeze({})).to.print(`{
+				Frozen
+			}`, {maxDepth: 1});
+			expect({foo: Object.freeze({})}).to.print(`{
+				foo: {…}
+			}`, {maxDepth: 1});
+			expect({foo: Object.freeze({})}).to.print(`{
+				foo: {
+					Frozen
+				}
+			}`, {maxDepth: 2});
+			expect(Object.freeze({__proto__: null})).to.print("{…}", {maxDepth: 0});
+			expect(Object.freeze({__proto__: null})).to.print(`{
+				Null prototype
+				Frozen
+			}`, {maxDepth: 1});
+			expect({foo: Object.freeze({__proto__: null})}).to.print(`{
+				foo: {…}
+			}`, {maxDepth: 1});
+			expect({foo: Object.freeze({__proto__: null})}).to.print(`{
+				foo: {
+					Null prototype
+					Frozen
+				}
+			}`, {maxDepth: 2});
+			
+			expect({__proto__: null, foo: Object.freeze({})}).to.print(`{
+				Null prototype
+				
+				foo: {…}
+			}`, {maxDepth: 1});
+			expect({__proto__: null, foo: Object.freeze({})}).to.print(`{
+				Null prototype
+				
+				foo: {
+					Frozen
+				}
+			}`, {maxDepth: 2});
+		});
+		
+		it("doesn't needlessly invoke getters", () => {
+			let callCount = 0;
+			const foo = {get bar(){ return ++callCount; }};
+			expect({foo}).to.print(`{
+				foo: {…}
+			}`, {followGetters: true, maxDepth: 1});
+			expect(callCount).to.equal(0);
+			expect({foo}).to.print(`{
+				foo: {
+					bar: 1
+				}
+			}`, {followGetters: true, maxDepth: 2});
+			expect(callCount).to.equal(1);
+			expect({get foo(){ return foo; }}).to.print(`{
+				foo: {
+					bar: 2
+				}
+			}`, {followGetters: true, maxDepth: 2});
+			expect(callCount).to.equal(2);
+		});
+		
+		it("still prints the object's class", () => {
+			class Thing {constructor(name){ this.name = name; }}
+			expect(new Thing("Foo")).to.print("Thing {…}", {maxDepth: 0});
+			expect(new Thing("Foo")).to.print(`Thing {
+				name: "Foo"
+			}`, {maxDepth: 1});
+			expect({foo: new Thing("Bar")}).to.print(`{
+				foo: Thing {…}
+			}`, {maxDepth: 1});
+			expect({foo: new Thing("Bar")}).to.print(`{
+				foo: Thing {
+					name: "Bar"
+				}
+			}`, {maxDepth: 2});
+		});
+		
+		it("still prints primitive values", () => {
+			expect("Foo").to.print('"Foo"', {maxDepth: 0});
+			expect(3.525).to.print("3.525", {maxDepth: 0});
+			expect(false).to.print("false", {maxDepth: 0});
+			expect(Symbol("Foo")).to.print("Symbol(Foo)", {maxDepth: 0});
+			expect({foo: "Foo", bar: 1, baz: false}).to.print(`{
+				foo: "Foo"
+				bar: 1
+				baz: false
+			}`, {maxDepth: 1});
+			expect({[Symbol("Foo")]: "Bar"}).to.print(`{
+				Symbol(Foo): "Bar"
+			}`, {maxDepth: 1});
+			expect({[Symbol("Foo")]: {}}).to.print(`{
+				Symbol(Foo): {…}
+			}`, {maxDepth: 1});
+		});
+	});
 });

@@ -279,6 +279,84 @@ describe("Lists", () => {
 				name: "Boötes"
 			]`);
 		});
+		
+		when("`maxDepth` is exceeded", () => {
+			it("elides entries", () => {
+				expect([1, 2, 3]).to.print("[…]", {maxDepth: 0});
+				expect([1, 2, 3]).to.print(`[
+					1
+					2
+					3
+				]`, {maxDepth: 1});
+				expect({foo: [1, 2, 3]}).to.print(`{
+					foo: […]
+				}`, {maxDepth: 1});
+			});
+			
+			it("elides nested entries", () => {
+				expect([[1, 2, 3]]).to.print(`[
+					[…]
+				]`, {maxDepth: 1});
+				expect([1, [2], 3]).to.print(`[
+					1
+					[…]
+					3
+				]`, {maxDepth: 1});
+				expect([1, [2, [2.5]], 3]).to.print(`[
+					1
+					[
+						2
+						[…]
+					]
+					3
+				]`, {maxDepth: 2});
+			});
+			
+			it("still identifies subclasses", () => {
+				class CustomArray extends Array{
+					constructor(...args){
+						super(...args);
+						this.text = "It's very custom";
+					}
+				}
+				const foo = new CustomArray();
+				expect(foo).to.print("CustomArray […]", {maxDepth: 0});
+				expect(foo).to.print(`CustomArray [
+					text: "It's very custom"
+				]`, {maxDepth: 1});
+				expect({foo}).to.print(`{
+					foo: CustomArray […]
+				}`, {maxDepth: 1});
+				expect({foo}).to.print(`{
+					foo: CustomArray [
+						text: "It's very custom"
+					]
+				}`, {maxDepth: 2});
+				foo.push("Foo", ["Bar"]);
+				expect(foo).to.print("CustomArray […]", {maxDepth: 0});
+				expect(foo).to.print("CustomArray […]", {maxDepth: 0, indexes: true});
+				expect(foo).to.print(`CustomArray [
+					"Foo"
+					[…]
+					
+					text: "It's very custom"
+				]`, {maxDepth: 1});
+				expect(foo).to.print(`CustomArray [
+					0: "Foo"
+					1: […]
+					
+					text: "It's very custom"
+				]`, {maxDepth: 1, indexes: true});
+				expect(foo).to.print(`CustomArray [
+					0: "Foo"
+					1: [
+						0: "Bar"
+					]
+					
+					text: "It's very custom"
+				]`, {maxDepth: 2, indexes: true});
+			});
+		});
 	});
 	
 	describe("Typed arrays", () => {
