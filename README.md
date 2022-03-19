@@ -103,6 +103,16 @@ default to `null` or `false`.
 <!----------------------------------------------------------------------------->
 
 
+To-do list
+--------------------------------------------------------------------------------
+* [ ] Add options for…
+	* [ ] Annotating property attributes (writable, enumerable, configurable)
+	* [ ] `maxLines`/`maxSize` for truncating length arrays or strings
+* [ ] Document remaining options
+* [ ] Migrate to GitHub Actions
+* [ ] Shorten `sortProps` to just `sort`
+
+
 <!-- Referenced links --------------------------------------------------------->
 [`Boolean`]: https://mdn.io/Boolean
 [`Number`]:  https://mdn.io/Number
