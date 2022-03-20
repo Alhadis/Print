@@ -322,7 +322,7 @@ describe("Property fields", () => {
 			});
 		});
 		
-		when("`sortProps` is enabled", () => {
+		when("`sort` is enabled", () => {
 			it("sorts names alphabetically", () => {
 				const obj = {
 					G: "gamma",
@@ -339,7 +339,7 @@ describe("Property fields", () => {
 					D: "delta"
 					G: "gamma"
 					P: "pi"
-				}`, {sortProps: true});
+				}`, {sort: true});
 				obj.Z = "zeta";
 				obj.E = "epsilon";
 				expect(obj).to.print(`{
@@ -351,7 +351,7 @@ describe("Property fields", () => {
 					G: "gamma"
 					P: "pi"
 					Z: "zeta"
-				}`, {sortProps: true});
+				}`, {sort: true});
 			});
 			
 			it("sorts symbols alphabetically", () => {
@@ -364,7 +364,7 @@ describe("Property fields", () => {
 					Symbol(beta): "B"
 					Symbol(gamma): "G"
 					Symbol(tau): "T"
-				}`, {sortProps: true});
+				}`, {sort: true});
 				obj[Ζ] = "Z";
 				obj[Α] = "A";
 				expect(obj).to.print(`{
@@ -373,7 +373,7 @@ describe("Property fields", () => {
 					Symbol(gamma): "G"
 					Symbol(tau): "T"
 					Symbol(zeta): "Z"
-				}`, {sortProps: true});
+				}`, {sort: true});
 			});
 			
 			it("sorts symbols and names together", () => {
@@ -388,7 +388,7 @@ describe("Property fields", () => {
 					Symbol(def): "DEF"
 					Symbol(uvw): "UVW"
 					xyz: "XYZ"
-				}`, {sortProps: true});
+				}`, {sort: true});
 			});
 			
 			it("sorts case-insensitively", () => {
@@ -402,7 +402,7 @@ describe("Property fields", () => {
 					B: 2
 					c: 3
 					D: 0
-				}`, {sortProps: true});
+				}`, {sort: true});
 				expect({
 					[Symbol("D")]: 0,
 					[Symbol("c")]: 3,
@@ -413,7 +413,7 @@ describe("Property fields", () => {
 					Symbol(B): 2
 					Symbol(c): 3
 					Symbol(D): 0
-				}`, {sortProps: true});
+				}`, {sort: true});
 			});
 		});
 	});
@@ -433,7 +433,7 @@ describe("Property fields", () => {
 			expect(obj).to.print(`{
 				a: "A"
 				c: "C"
-			}`, {sortProps: true});
+			}`, {sort: true});
 		});
 		
 		it("shows them if `opts.all` is enabled", () => {

@@ -14,7 +14,7 @@
  * @param  {Boolean} [opts.noHex]         - Don't format byte-arrays as hexadecimal
  * @param  {Boolean} [opts.noSource]      - Don't display function source code
  * @param  {Boolean} [opts.proto]         - Show `__proto__` properties if possible
- * @param  {Boolean} [opts.sortProps]     - Sort properties alphabetically
+ * @param  {Boolean} [opts.sort]          - Sort properties alphabetically
  * @param  {WeakMap} [refs=new WeakMap()] - Tracked object references (internal-use only)
  * @param  {String}  [path=""]            - Accessor string used to identify a reference
  * @param  {Number}  [depth=0]            - Current recursion level
@@ -354,7 +354,7 @@ export default function print(value, ...args){
 	if(!tooDeep){
 		// Handle property sorting
 		props.push(...Object.getOwnPropertySymbols(value));
-		opts.sortProps && props.sort((a, b) =>
+		opts.sort && props.sort((a, b) =>
 			String(a).toLowerCase().localeCompare(String(b).toLowerCase()));
 		
 		// Identify Number/Math globals so we know when not to identify “magic” numbers

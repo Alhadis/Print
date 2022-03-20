@@ -99,7 +99,7 @@ default to `null` or `false`.
 | `noHex`         | [`Boolean`][] | Don't format byte-arrays as hexadecimal    |
 | `noSource`      | [`Boolean`][] | Don't display function source code         |
 | `proto`         | [`Boolean`][] | Show `__proto__` properties if possible    |
-| `sortProps`     | [`Boolean`][] | Sort properties alphabetically             |
+| `sort`          | [`Boolean`][] | Sort properties alphabetically             |
 <!----------------------------------------------------------------------------->
 
 
@@ -110,7 +110,7 @@ To-do list
 	* [ ] `maxLines`/`maxSize` for truncating length arrays or strings
 * [ ] Document remaining options
 * [ ] Migrate to GitHub Actions
-* [ ] Shorten `sortProps` to just `sort`
+* [x] Shorten `sortProps` to just `sort`
 
 
 <!-- Referenced links --------------------------------------------------------->
