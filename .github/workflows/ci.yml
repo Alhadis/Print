@@ -1,0 +1,32 @@
+name: CI
+
+on:
+    push:         {branches: [master]}
+    pull_request: {branches: [master]}
+    workflow_dispatch:
+        # Enable manual execution via Actions tab
+
+jobs:
+    test:
+        name: Test Node v${{ matrix.node }}
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node: [13.2, 14, 16, 18]
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node }}
+
+            - name: Run package tests
+              shell: sh
+              run: |
+                  node --version
+                  npm --version
+                  make all
+                  make coverage

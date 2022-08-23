@@ -2,15 +2,15 @@
 
 Print
 ================================================================================
-[![Build status: TravisCI][TravisCI-badge]][TravisCI-link]
+[![Build status: GitHub Actions][Actions-badge]][Actions-link]
 [![Build status: AppVeyor][AppVeyor-badge]][AppVeyor-link]
 [![Coverage status][Coverage-badge]][Coverage-link]
 [![Latest release][NPM-badge]][NPM-link]
 
 [AppVeyor-badge]: https://img.shields.io/appveyor/build/Alhadis/Print
 [AppVeyor-link]:  https://ci.appveyor.com/project/Alhadis/Print
-[TravisCI-badge]: https://travis-ci.org/Alhadis/Print.svg?branch=master
-[TravisCI-link]:  https://travis-ci.org/Alhadis/Print
+[Actions-badge]:  https://img.shields.io/github/workflow/status/Alhadis/Print/CI?label=GitHub%20Actions&logo=github
+[Actions-link]:   https://github.com/Alhadis/Print/actions/workflows/ci.yml
 [Coverage-badge]: https://coveralls.io/repos/github/Alhadis/Print/badge.svg
 [Coverage-link]:  https://coveralls.io/github/Alhadis/Print
 [NPM-badge]:      https://img.shields.io/npm/v/print.svg?colorB=brightgreen
@@ -109,7 +109,7 @@ To-do list
 	* [ ] Annotating property attributes (writable, enumerable, configurable)
 	* [ ] `maxLines`/`maxSize` for truncating length arrays or strings
 * [ ] Document remaining options
-* [ ] Migrate to GitHub Actions
+* [x] Migrate to GitHub Actions
 * [x] Shorten `sortProps` to just `sort`
 
 
