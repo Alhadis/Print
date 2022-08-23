@@ -12,7 +12,7 @@ node_modules:
 
 # Check source for errors and style violations
 lint: install
-	npx eslint .
+	npx eslint --ext cjs,mjs,js -- .
 
 .PHONY: lint
 

@@ -36,6 +36,13 @@
 			"node": false
 		},
 		"overrides": [{
+			"files":   ["dump-env.mjs"],
+			"globals": {"console": "readonly"},
+			"rules":   {
+				"capitalized-comments": ["error", "always", {"ignorePattern": "^bin/sh"}],
+				"spaced-comment": 0
+			}
+		},{
 			"files":   ["test/*.mjs"],
 			"env":     {"mocha": true},
 			"globals": {"when": "readonly"}
