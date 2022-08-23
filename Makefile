@@ -1,3 +1,5 @@
+NPM-INSTALL = npm install --quiet --no-save --no-package-lock
+
 all: install lint test
 
 
@@ -5,7 +7,7 @@ all: install lint test
 install: node_modules
 
 node_modules:
-	npm install --quiet --no-save --no-package-lock
+	$(NPM-INSTALL)
 
 
 # Check source for errors and style violations
@@ -24,7 +26,11 @@ test: install
 
 # Submit coverage information to Coveralls.io
 coverage:
-	npm install coveralls
+	@ [ "$$COVERALLS_REPO_TOKEN" ] || {\
+		printf >&2 'Error: $$COVERALLS_REPO_TOKEN not set in environment; bailing\n'; \
+		exit 2; \
+	}
+	[ -d node_modules/coveralls ] || $(NPM-INSTALL) coveralls
 	npx c8 report --reporter text-lcov | npx coveralls
 
 .PHONY: coverage
