@@ -7,7 +7,7 @@ Print
 [![Coverage status][Coverage-badge]][Coverage-link]
 [![Latest release][NPM-badge]][NPM-link]
 
-[AppVeyor-badge]: https://img.shields.io/appveyor/build/Alhadis/Print
+[AppVeyor-badge]: https://img.shields.io/appveyor/build/Alhadis/Print?label=AppVeyor&logo=appveyor&logoColor=%23ccc
 [AppVeyor-link]:  https://ci.appveyor.com/project/Alhadis/Print
 [Actions-badge]:  https://img.shields.io/github/workflow/status/Alhadis/Print/CI?label=GitHub%20Actions&logo=github
 [Actions-link]:   https://github.com/Alhadis/Print/actions/workflows/ci.yml
