@@ -19,10 +19,10 @@
 		"test": "make test"
 	},
 	"devDependencies": {
-		"@alhadis/eslint-config": "^2.4.0",
+		"@alhadis/eslint-config": "v2.3.4",
 		"c8": "^7.12.0",
-		"eslint": "^8.22.0",
-		"mocha": "^10.0.0",
+		"eslint": "^7.32.0",
+		"mocha": "^v9.2.2",
 		"mocha-when": "^1.0.1"
 	},
 	"mocha": {
