@@ -1,4 +1,5 @@
 /** @typedef {String|Symbol} Key */
+/** @typedef {String|Number} Indent */
 
 /**
  * Generate a human-readable representation of a value.
@@ -8,6 +9,7 @@
  * @param  {Object}  [opts]               - Additional settings for refining output
  * @param  {Boolean} [opts.all]           - Display non-enumerable properties
  * @param  {Boolean} [opts.followGetters] - Invoke getter functions
+ * @param  {Indent}  [opts.indent="\t"]   - String (or number of spaces) used to indent
  * @param  {Boolean} [opts.indexes]       - Display the indexes of iterable entries
  * @param  {Number}  [opts.maxDepth]      - Hide object details after 𝑁 recursions
  * @param  {Boolean} [opts.noAmp]         - Don't identify well-known symbols as `@@…`
@@ -418,10 +420,17 @@ export default function print(value, ...args){
 			numProps && linesAfter.unshift("");
 			propLines.push(...linesAfter);
 		}
-		if(propLines.length)
+		if(propLines.length){
+			// Resolve indentation string
+			let {indent = "\t"} = opts;
+			indent = "number" === typeof indent
+				? " ".repeat(indent)
+				: indent ? String(indent) : "";
+			
 			for(const prop of propLines)
 			for(const line of prop.split("\n"))
-				value[1] += `\t${line}\n`;
+				value[1] += `${indent}${line}\n`;
+		}
 		else value[1] = "";
 	}
 	

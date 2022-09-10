@@ -93,6 +93,7 @@ default to `null` or `false`.
 |:----------------|:--------------|:-------------------------------------------|
 | `all`           | [`Boolean`][] | Display non-enumerable properties          |
 | `followGetters` | [`Boolean`][] | Invoke getter functions                    |
+| `indent`        | [`String`][]  | String (or num. of spaces) used to indent  |
 | `indexes`       | [`Boolean`][] | Display the indexes of iterable entries    |
 | `maxDepth`      | [`Number`][]  | Hide object details after _N_ recursions   |
 | `noAmp`         | [`Boolean`][] | Don't format [well-known symbols] as `@@…` |
