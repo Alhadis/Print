@@ -29,4 +29,3 @@ jobs:
                   node --version
                   npm --version
                   make all
-                  make coverage
