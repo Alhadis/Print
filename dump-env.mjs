@@ -5,6 +5,7 @@ import print from "./print.mjs";
 
 const str = print(globalThis, "globalThis", {
 	all:      true,
+	attr:     true,
 	colours:  true,
 	proto:    true,
 	maxDepth: Infinity,

@@ -23,6 +23,7 @@ This project honours [Semantic Versioning](http://semver.org/).
 
 **Enhancements:**
 * Added recognition of [`Arguments`][3] objects
+* Added support for displaying [property attributes][5] inline
 * Added support for printing [`__proto__`][4] properties
 * Boxed primitives now include their internal `[[PrimitiveValue]]`
 * Byte-arrays now display their contents as hex dumps
@@ -30,12 +31,14 @@ This project honours [Semantic Versioning](http://semver.org/).
 * Functions now display their source-code when printed
 * Only well-known symbols are identified using `@@…` notation
 * Printed `Math` and `Number` globals now show values of named constants
+* Property attributes can be displayed inline using the `attr` option
 * Support for property sorting, coloured output, and custom indentation
 
 [1]: http://man.openbsd.org/diff.1
 [2]: https://console.spec.whatwg.org/
 [3]: https://mdn.io/JS/Arguments
 [4]: https://mdn.io/JS/__proto__
+[5]: https://mdn.io/JS/defineProperty
 
 
 [v1.2.0]

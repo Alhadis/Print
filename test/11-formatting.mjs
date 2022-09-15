@@ -88,6 +88,22 @@ describe("Formatting", () => {
 			expect(print(input, "input", {colours: 8}))   .to.equal(exp2);
 		});
 		
+		it("colours property attributes", () => {
+			const input = Object.defineProperties({}, {
+				foo: {value: 1, configurable: true,  enumerable: false, writable: true},
+				bar: {value: 2, configurable: false, enumerable: true,  writable: true},
+				baz: {value: 3, configurable: true,  enumerable: true,  writable: true},
+				qux: {get(){ return 1; }, set(){}, configurable: true, enumerable: false},
+				qul: {get(){ return 1; }, set(){}, configurable: true, enumerable: true},
+			});
+			const exp1 = file("fixtures/attributes-256.out");
+			const exp2 = file("fixtures/attributes-8.out");
+			expect(print(input, "input", {all: true, attr: true, colours: {}}))  .to.equal(exp1);
+			expect(print(input, "input", {all: true, attr: true, colours: true})).to.equal(exp1);
+			expect(print(input, "input", {all: true, attr: true, colours: 256})) .to.equal(exp1);
+			expect(print(input, "input", {all: true, attr: true, colours: 8}))   .to.equal(exp2);
+		});
+		
 		describe("User-defined colours", () => {
 			const obj = {foo: "Bar"};
 			obj.bar = [{}];

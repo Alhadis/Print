@@ -92,6 +92,7 @@ default to `null` or `false`.
 | Name            | Type          | Description                                |
 |:----------------|:--------------|:-------------------------------------------|
 | `all`           | [`Boolean`][] | Display non-enumerable properties          |
+| `attr`          | [`Boolean`][] | Display [property attributes] as `<W,E,C>` |
 | `followGetters` | [`Boolean`][] | Invoke getter functions                    |
 | `indent`        | [`String`][]  | String (or num. of spaces) used to indent  |
 | `indexes`       | [`Boolean`][] | Display the indexes of iterable entries    |
@@ -107,7 +108,7 @@ default to `null` or `false`.
 To-do list
 --------------------------------------------------------------------------------
 * [ ] Add options for…
-	* [ ] Annotating property attributes (writable, enumerable, configurable)
+	* [x] Annotating property attributes (writable, enumerable, configurable)
 	* [ ] `maxLines`/`maxSize` for truncating length arrays or strings
 * [ ] Document remaining options
 * [x] Migrate to GitHub Actions
@@ -120,4 +121,5 @@ To-do list
 [`Object`]:  https://mdn.io/Object
 [`String`]:  https://mdn.io/String
 [`Symbol`]:  https://mdn.io/Symbol
+[property attributes]: https://mdn.io/JS/defineProperty
 [well-known symbols]: https://mdn.io/Glossary/Symbol#Well-known_symbols

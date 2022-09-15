@@ -8,6 +8,7 @@
  * @param  {Key}     [key]                - The value's corresponding member name
  * @param  {Object}  [opts]               - Additional settings for refining output
  * @param  {Boolean} [opts.all]           - Display non-enumerable properties
+ * @param  {Boolean} [opts.attr]          - Display property attributes as `<W,E,C>`
  * @param  {Boolean} [opts.followGetters] - Invoke getter functions
  * @param  {Indent}  [opts.indent="\t"]   - String (or number of spaces) used to indent
  * @param  {Boolean} [opts.indexes]       - Display the indexes of iterable entries
@@ -75,6 +76,9 @@ export default function print(value, ...args){
 	
 	// Resolve decorator characters
 	let {
+		attrLeft   = "<",
+		attrRight  = ">",
+		attrSep    = ",",
 		arrowFat   = "=>",
 		arrowThin  = "->",
 		braceLeft  = "[",
@@ -106,6 +110,8 @@ export default function print(value, ...args){
 			colours[key] = "\x1B[38;5;" + colours[key] + "m";
 	const {
 		off        = ["", "\x1B[0m",  "\x1B[0m"]       [colourMode],
+		attr       = ["", "\x1B[36m", "\x1B[38;5;44m"] [colourMode],
+		attrFade   = ["", attr,       "\x1B[38;5;30m"] [colourMode],
 		red        = ["", "\x1B[31m", "\x1B[38;5;9m"]  [colourMode],
 		grey       = ["", "\x1B[37m", "\x1B[38;5;8m"]  [colourMode],
 		green      = ["", "\x1B[32m", "\x1B[38;5;10m"] [colourMode],
@@ -139,6 +145,9 @@ export default function print(value, ...args){
 		empty      = grey + "empty " + times + " ",
 		dot        = punct + ".",
 	} = colours;
+	attrLeft   = attrFade  + attrLeft   + off;
+	attrRight  = attrFade  + attrRight  + off;
+	attrSep    = attrFade  + attrSep    + off;
 	braceLeft  = braces    + braceLeft  + off;
 	braceRight = braces    + braceRight + off;
 	quoteLeft  = quotes    + quoteLeft  + string;
@@ -150,7 +159,16 @@ export default function print(value, ...args){
 	// Resolve identifiers
 	key  = null != key ? flags & 1 ? key : formatKey(key) : "";
 	path = path ? (key ? path + dot + keys + key : path) : key || "{root}";
-	key += key  ? punct + ":" + off + " " : "";
+	if(key){
+		if(opts.attr){
+			const atts = [];
+			flags & 8  && atts.push(attr + "C" + off); // Configurable
+			flags & 16 && atts.push(attr + "E" + off); // Enumerable
+			flags & 32 && atts.push(attr + "W" + off); // Writable
+			key += " " + attrLeft + atts.join(attrSep) + attrRight;
+		}
+		key += punct + ":" + off + " ";
+	}
 	
 	// Special primitives that need no introduction
 	switch(value){
@@ -314,11 +332,16 @@ export default function print(value, ...args){
 			[].forEach.call(entries, (x, i) => {
 				if(lastIndex < i - 1)
 					linesBefore.push(empty + `${i - lastIndex - 1}` + off);
+				let flags = 0;
+				if(opts.attr){
+					const desc = Object.getOwnPropertyDescriptor(value, i);
+					flags = (desc.configurable) << 3 | (desc.enumerable) << 4 | (desc.writable) << 5;
+				}
 				linesBefore.push(print(x,
 					opts.indexes && !isArrayBuffer ? i : null,
 					opts, refs,
 					path + braceLeft + keys + i + braceRight + off,
-					depth,
+					depth, flags,
 				));
 				lastIndex = i;
 			});
@@ -377,6 +400,10 @@ export default function print(value, ...args){
 			// Skip non-enumerable properties by default
 			if(!desc.enumerable && !opts.all)
 				continue;
+			
+			// Store descriptor attributes
+			flags &= 7;
+			flags |= (desc.configurable) << 3 | (desc.enumerable) << 4 | (desc.writable) << 5;
 			
 			// Getter and/or setter
 			if(desc.get || desc.set){
